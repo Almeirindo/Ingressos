@@ -24,7 +24,7 @@ export default function Footer() {
             </p>
             <div className="flex space-x-3">
               <a 
-                href="https://www.instagram.com/migueloprovi" 
+                href="https://www.instagram.com/ingressosdabanda " 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-primary hover:text-black transition-colors"
@@ -34,7 +34,7 @@ export default function Footer() {
                 </svg>
               </a>
               <a 
-                href="https://www.facebook.com/miguelazevedoopro" 
+                href="https://www.facebook.com/ingressosdabanda" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-primary hover:text-black transition-colors"
@@ -86,8 +86,8 @@ export default function Footer() {
                 <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                 </svg>
-                <a href="mailto:migueloprovi@gmail.com" className="hover:text-white transition-colors">
-                  migueloprovi@gmail.com
+                <a href="mailto:ingressosdabanda@gmail.com" className="hover:text-white transition-colors">
+                  ingressosdabanda@gmail.com
                 </a>
               </div>
               <div className="flex items-center text-gray-400">
