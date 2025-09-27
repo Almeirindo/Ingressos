@@ -96,6 +96,21 @@ export default function AdminEventsPage() {
     }
   }
 
+  async function toggleFeatured(id: number) {
+    setTableLoading(true);
+    try {
+      const res = await fetch(`/api/admin/events/${id}/featured`, { method: 'PATCH', headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      if (!res.ok) { alert(data.error || 'Erro ao alterar destaque'); return; }
+      alert(data.message);
+      await load();
+    } catch (error) {
+      alert('Erro ao alterar destaque');
+    } finally {
+      setTableLoading(false);
+    }
+  }
+
   function edit(ev: Event) {
     setEditingId(ev.id);
     setForm({
@@ -232,19 +247,20 @@ export default function AdminEventsPage() {
               <th className="p-3">Horário</th>
               <th className="p-3">Ingressos</th>
               <th className="p-3">Preços</th>
+              <th className="p-3">Destaque</th>
               <th className="p-3">Ações</th>
             </tr>
           </thead>
           <tbody>
             {tableLoading ? (
               <tr>
-                <td colSpan={6} className="p-4 text-center">
+                <td colSpan={7} className="p-4 text-center">
                   <LoadingSpinner />
                 </td>
               </tr>
             ) : events.length === 0 ? (
               <tr>
-                <td colSpan={6} className="p-4 text-center text-gray-400">Nenhum evento encontrado</td>
+                <td colSpan={7} className="p-4 text-center text-gray-400">Nenhum evento encontrado</td>
               </tr>
             ) : (
               events.map(ev => (
@@ -260,6 +276,15 @@ export default function AdminEventsPage() {
                         <div className="text-yellow-400">VIP: Kz {Number(ev.vipPrice).toLocaleString()}</div>
                       )}
                     </div>
+                  </td>
+                  <td className="p-3">
+                    <Button
+                      variant={ev.isFeatured ? "primary" : "outline"}
+                      size="sm"
+                      onClick={() => toggleFeatured(ev.id)}
+                    >
+                      {ev.isFeatured ? "Destacado" : "Destacar"}
+                    </Button>
                   </td>
                   <td className="p-3">
                     <Button variant="secondary" size="sm" onClick={() => edit(ev)} className="mr-2">Editar</Button>

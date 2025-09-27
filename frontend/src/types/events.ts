@@ -11,6 +11,7 @@ export interface Event {
   normalPrice?: number;
   vipPrice?: number;
   ticketsSold?: number;
+  isFeatured?: boolean;
 }
 
 export interface EventCarouselProps {

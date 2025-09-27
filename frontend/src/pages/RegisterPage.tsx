@@ -3,6 +3,12 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { InputField, Button, Card } from '../components/ui';
 
+const countries = [
+  { code: '244', digits: 9, placeholder: '912 345 678', flag: '🇦🇴', label: 'Angola (+244)' },
+  { code: '351', digits: 9, placeholder: '912 345 678', flag: '🇵🇹', label: 'Portugal (+351)' },
+  { code: '55', digits: 11, placeholder: '11 91234 5678', flag: '🇧🇷', label: 'Brasil (+55)' }
+];
+
 export default function RegisterPage() {
   const { login } = useAuth();
   const nav = useNavigate();
@@ -14,6 +20,9 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [selectedCountry, setSelectedCountry] = useState(countries[0]);
+  const [termsAgreed, setTermsAgreed] = useState(false);
+  const [humanVerified, setHumanVerified] = useState(false);
 
   const validateStep = (step: number) => {
     switch (step) {
@@ -25,12 +34,12 @@ export default function RegisterPage() {
         const trimmedEmail = email.trim().toLowerCase();
         const isLowerCase = trimmedEmail === email.trim().toLowerCase();
         const cleanPhone = phone.replace(/\D/g, '');
-        const isValidPhone = cleanPhone.length === 9 && !isNaN(parseInt(cleanPhone));
+        const isValidPhone = cleanPhone.length === selectedCountry.digits && !isNaN(parseInt(cleanPhone));
         return name.trim().length >= 2 && isValidPhone && isValidEmail && isLowerCase;
       case 3:
         const trimmedPassword = password.trim();
         const trimmedConfirm = confirmPassword.trim();
-        return trimmedPassword.length >= 6 && trimmedPassword === trimmedConfirm;
+        return trimmedPassword.length >= 6 && trimmedPassword === trimmedConfirm && termsAgreed && humanVerified;
       default:
         return false;
     }
@@ -57,20 +66,14 @@ export default function RegisterPage() {
     const trimmedName = name.trim();
     const trimmedEmail = email.trim().toLowerCase();
     const cleanPhone = phone.replace(/\D/g, '');
+    const fullPhone = selectedCountry.code + cleanPhone;
     const trimmedPassword = password.trim();
-
-    // Final validation
-    if (cleanPhone.length !== 9 || isNaN(parseInt(cleanPhone))) {
-      setError('Telefone deve ter exatamente 9 dígitos numéricos.');
-      setIsLoading(false);
-      return;
-    }
 
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: trimmedName, email: trimmedEmail, phone: cleanPhone, password: trimmedPassword })
+        body: JSON.stringify({ name: trimmedName, email: trimmedEmail, phone: fullPhone, password: trimmedPassword })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erro no registro');
@@ -172,19 +175,35 @@ export default function RegisterPage() {
                   </svg>
                 }
               />
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">País</label>
+                <select
+                  value={selectedCountry.code}
+                  onChange={e => setSelectedCountry(countries.find(c => c.code === e.target.value) || countries[0])}
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50"
+                  disabled={isLoading}
+                  required
+                >
+                  {countries.map(country => (
+                    <option key={country.code} value={country.code}>
+                      {country.flag} {country.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <InputField
                 label="Telefone"
                 type="tel"
                 value={phone}
-                onChange={e => setPhone(e.target.value)}
-                placeholder="912345678"
+                onChange={e => setPhone(e.target.value.replace(/\D/g, ''))}
+                placeholder={selectedCountry.placeholder}
                 disabled={isLoading}
                 required
                 error={
                   phone
                     ? (() => {
                         const cleanPhone = phone.replace(/\D/g, '');
-                        return cleanPhone.length !== 9 || isNaN(parseInt(cleanPhone)) ? 'Telefone deve ter exatamente 9 dígitos numéricos' : undefined;
+                        return cleanPhone.length !== selectedCountry.digits || isNaN(parseInt(cleanPhone)) ? `Telefone deve ter ${selectedCountry.digits} dígitos numéricos` : undefined;
                       })()
                     : undefined
                 }
@@ -239,6 +258,40 @@ export default function RegisterPage() {
                   </svg>
                 }
               />
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id="terms"
+                    checked={termsAgreed}
+                    onChange={e => setTermsAgreed(e.target.checked)}
+                    className="mt-1 w-4 h-4 text-primary bg-white/10 border-white/20 rounded focus:ring-primary focus:ring-2"
+                    disabled={isLoading}
+                    required
+                  />
+                  <label htmlFor="terms" className="text-sm text-gray-300">
+                    Eu concordo com os{' '}
+                    <Link to="/terms" className="text-primary hover:text-blue-300 underline">
+                      termos e condições
+                    </Link>{' '}
+                    para registrar.
+                  </label>
+                </div>
+                <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id="human"
+                    checked={humanVerified}
+                    onChange={e => setHumanVerified(e.target.checked)}
+                    className="mt-1 w-4 h-4 text-primary bg-white/10 border-white/20 rounded focus:ring-primary focus:ring-2"
+                    disabled={isLoading}
+                    required
+                  />
+                  <label htmlFor="human" className="text-sm text-gray-300">
+                    Não sou um robô.
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
         );

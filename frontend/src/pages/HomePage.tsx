@@ -2,11 +2,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import EventGrid from '../components/EventGrid';
-
+import EventCarousel from '../components/EventCarousel';
 import { InputField, Button } from '../components/ui';
 import { Event } from '../types/events';
 import { Purchase } from '../types/purchases';
-import EventCarousel from '../components/EventCarousel-fixed';
+
 
 export default function HomePage() {
   const [events, setEvents] = useState<Event[]>([]);

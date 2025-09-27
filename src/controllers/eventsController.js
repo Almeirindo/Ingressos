@@ -79,7 +79,10 @@ function transformEventForResponse(event) {
 exports.getAllEvents = async (req, res) => {
   try {
     const events = await prisma.event.findMany({
-      orderBy: { date: 'asc' }
+      orderBy: [
+        { isFeatured: 'desc' }, // Featured events first
+        { date: 'asc' }
+      ]
     });
 
     const eventsWithStats = events.map(event => ({
@@ -347,6 +350,34 @@ exports.deleteEvent = async (req, res) => {
     res.json({ message: 'Evento deletado com sucesso!' });
   } catch (error) {
     console.error('Erro ao deletar evento:', error);
+    res.status(500).json({ error: 'Erro interno do servidor.' });
+  }
+};
+
+exports.toggleFeatured = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const eventId = parseInt(id);
+
+    const event = await prisma.event.findUnique({
+      where: { id: eventId }
+    });
+
+    if (!event) {
+      return res.status(404).json({ error: 'Evento não encontrado.' });
+    }
+
+    const updatedEvent = await prisma.event.update({
+      where: { id: eventId },
+      data: { isFeatured: !event.isFeatured }
+    });
+
+    res.json({
+      message: `Evento ${updatedEvent.isFeatured ? 'marcado como destaque' : 'removido dos destaques'} com sucesso!`,
+      event: transformEventForResponse(updatedEvent)
+    });
+  } catch (error) {
+    console.error('Erro ao alterar destaque do evento:', error);
     res.status(500).json({ error: 'Erro interno do servidor.' });
   }
 };

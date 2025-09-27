@@ -11,7 +11,7 @@ model User {
   id        Int      @id @default(autoincrement())
   name      String   @db.VarChar(255)
   email     String   @unique @db.VarChar(255)
-  phone     Int      @unique
+  phone     BigInt   @unique
   password  String   @db.VarChar(255)
   role      Role     @default(USER)
   isActive  Boolean  @default(true) @map("is_active")
@@ -38,6 +38,7 @@ model Event {
   normalPrice      Decimal  @default(0.00) @db.Decimal(10, 2) @map("normal_price")
   vipPrice         Decimal  @default(0.00) @db.Decimal(10, 2) @map("vip_price")
   flyerPath        String?  @db.VarChar(500) @map("flyer_path")
+  isFeatured       Boolean  @default(false)
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
 

@@ -34,18 +34,42 @@ exports.register = async (req, res) => {
       return res.status(400).json({ error: 'Email não pode conter letras maiúsculas.' });
     }
 
-    // Normalize phone: remove non-digits, validate 9 digits
-    const cleanPhone = phone.replace(/\D/g, '');
-    if (cleanPhone.length !== 9 || isNaN(parseInt(cleanPhone))) {
-      return res.status(400).json({ error: 'Telefone deve ter exatamente 9 dígitos numéricos (ex: 912345678).' });
+    // Validate phone: full numeric string (countryCode + local)
+    let cleanPhone = phone.replace(/\D/g, '');
+    // If 9 digits and starts with 9, assume Angola mobile and prepend 244
+    if (cleanPhone.length === 9 && cleanPhone.startsWith('9')) {
+      cleanPhone = '244' + cleanPhone;
     }
+    if (cleanPhone.length < 12 || isNaN(parseInt(cleanPhone))) {
+      return res.status(400).json({ error: 'Telefone inválido. Use o formato completo com código do país.' });
+    }
+
+    const countryCode = cleanPhone.slice(0, 3);
+    const localDigits = cleanPhone.slice(3);
+    let expectedLocalLength;
+
+    if (countryCode === '244' || countryCode === '351') {
+      expectedLocalLength = 9;
+    } else if (countryCode === '55') {
+      expectedLocalLength = 11;
+    } else {
+      return res.status(400).json({ error: 'Código de país não suportado. Use +244 (Angola), +351 (Portugal) ou +55 (Brasil).' });
+    }
+
+    if (localDigits.length !== expectedLocalLength || isNaN(parseInt(localDigits))) {
+      return res.status(400).json({
+        error: `Telefone local deve ter ${expectedLocalLength} dígitos para ${countryCode === '244' ? 'Angola' : countryCode === '351' ? 'Portugal' : 'Brasil'}.`
+      });
+    }
+
+    const phoneBigInt = BigInt(cleanPhone);
 
     // Verificar se usuário já existe
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
           { email },
-          { phone: parseInt(cleanPhone) }
+          { phone: phoneBigInt }
         ]
       }
     });
@@ -62,7 +86,7 @@ exports.register = async (req, res) => {
       data: {
         name,
         email,
-        phone: parseInt(cleanPhone),
+        phone: phoneBigInt,
         password: hashedPassword,
         role: 'USER',
         isActive: true
@@ -82,7 +106,7 @@ exports.register = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        phone: user.phone,
+        phone: user.phone.toString(), // Convert BigInt to string for JSON
         role: user.role
       },
       token
@@ -107,12 +131,32 @@ exports.login = async (req, res) => {
       return res.status(400).json({ error: 'Telefone ou email e senha são obrigatórios.' });
     }
 
-    // Normalize phone if provided
+    // Normalize phone if provided: full numeric (country + local)
     let cleanPhoneStr = null;
     if (phone) {
       cleanPhoneStr = phone.replace(/\D/g, '');
-      if (cleanPhoneStr.length !== 9 || isNaN(parseInt(cleanPhoneStr))) {
-        return res.status(400).json({ error: 'Telefone deve ter exatamente 9 dígitos numéricos.' });
+      // If 9 digits and starts with 9, assume Angola mobile and prepend 244
+      if (cleanPhoneStr.length === 9 && cleanPhoneStr.startsWith('9')) {
+        cleanPhoneStr = '244' + cleanPhoneStr;
+      }
+      if (cleanPhoneStr.length < 12 || isNaN(parseInt(cleanPhoneStr))) {
+        return res.status(400).json({ error: 'Telefone deve estar no formato completo com código do país (ex: 244912345678).' });
+      }
+
+      const countryCode = cleanPhoneStr.slice(0, 3);
+      const localDigits = cleanPhoneStr.slice(3);
+      let expectedLocalLength;
+
+      if (countryCode === '244' || countryCode === '351') {
+        expectedLocalLength = 9;
+      } else if (countryCode === '55') {
+        expectedLocalLength = 11;
+      } else {
+        return res.status(400).json({ error: 'Código de país não suportado no login.' });
+      }
+
+      if (localDigits.length !== expectedLocalLength) {
+        return res.status(400).json({ error: `Telefone inválido para login. Verifique o formato.` });
       }
     }
 
@@ -122,7 +166,8 @@ exports.login = async (req, res) => {
     // Buscar usuário por telefone ou email
     let orConditions = [];
     if (cleanPhoneStr) {
-      orConditions.push({ phone: parseInt(cleanPhoneStr) });
+      const phoneBigInt = BigInt(cleanPhoneStr);
+      orConditions.push({ phone: phoneBigInt });
     }
     if (lowerEmail) {
       orConditions.push({ email: lowerEmail });
@@ -161,7 +206,7 @@ exports.login = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        phone: user.phone,
+        phone: user.phone.toString(), // Convert BigInt to string
         role: user.role
       },
       token
@@ -180,7 +225,7 @@ exports.getProfile = async (req, res) => {
         id: req.user.id,
         name: req.user.name,
         email: req.user.email,
-        phone: req.user.phone,
+        phone: req.user.phone.toString(), // Convert BigInt to string
         role: req.user.role
       }
     });
@@ -200,13 +245,35 @@ exports.forgotPassword = async (req, res) => {
 
     let user;
     if (email) {
-      user = await prisma.user.findUnique({ where: { email } });
+      user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
     } else {
-      const cleanPhone = phone.replace(/\D/g, '');
-      if (cleanPhone.length !== 9 || isNaN(parseInt(cleanPhone))) {
-        return res.status(400).json({ error: 'Telefone deve ter exatamente 9 dígitos numéricos.' });
+      let cleanPhone = phone.replace(/\D/g, '');
+      // If 9 digits and starts with 9, assume Angola mobile and prepend 244
+      if (cleanPhone.length === 9 && cleanPhone.startsWith('9')) {
+        cleanPhone = '244' + cleanPhone;
       }
-      user = await prisma.user.findUnique({ where: { phone: parseInt(cleanPhone) } });
+      if (cleanPhone.length < 12 || isNaN(parseInt(cleanPhone))) {
+        return res.status(400).json({ error: 'Telefone deve estar no formato completo com código do país.' });
+      }
+
+      const countryCode = cleanPhone.slice(0, 3);
+      const localDigits = cleanPhone.slice(3);
+      let expectedLocalLength;
+
+      if (countryCode === '244' || countryCode === '351') {
+        expectedLocalLength = 9;
+      } else if (countryCode === '55') {
+        expectedLocalLength = 11;
+      } else {
+        return res.status(400).json({ error: 'Código de país não suportado.' });
+      }
+
+      if (localDigits.length !== expectedLocalLength) {
+        return res.status(400).json({ error: 'Formato de telefone inválido.' });
+      }
+
+      const phoneBigInt = BigInt(cleanPhone);
+      user = await prisma.user.findUnique({ where: { phone: phoneBigInt } });
     }
 
     if (!user) {
@@ -260,10 +327,16 @@ exports.forgotPassword = async (req, res) => {
 
       const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
 
+      // Extract country and local from stored phone BigInt
+      const phoneStr = user.phone.toString();
+      const countryCode = phoneStr.slice(0, 3);
+      const local = phoneStr.slice(3);
+      const toPhone = `+${countryCode}${local}`;
+
       client.messages.create({
         body: `Seu código de recuperação de senha é: ${resetToken}. Expira em 1 hora.`,
         from: process.env.TWILIO_PHONE_NUMBER,
-        to: `+244${user.phone}` // Assuming Angola code
+        to: toPhone
       })
       .then(message => {
         res.json({ message: 'Código de recuperação enviado para o telefone.' });

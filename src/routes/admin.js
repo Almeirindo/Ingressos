@@ -179,4 +179,9 @@ router.delete('/users/:id/purchases/cancelled', authMiddleware, requireAdmin, as
   }
 });
 
+const { toggleFeatured } = require('../controllers/eventsController');
+
+// Toggle featured status for an event
+router.patch('/events/:id/featured', authMiddleware, requireAdmin, toggleFeatured);
+
 module.exports = router;

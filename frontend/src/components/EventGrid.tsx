@@ -66,9 +66,17 @@ export default function EventGrid({
     return `${event.availableTickets} disponíveis`;
   };
 
-  // Enhanced events with stats
+  // Enhanced events with stats, sorted by featured first
   const enhancedEvents = useMemo(() =>
-    events.map(getEventStats),
+    events
+      .map(getEventStats)
+      .sort((a, b) => {
+        // Featured events first
+        if (a.isFeatured && !b.isFeatured) return -1;
+        if (!a.isFeatured && b.isFeatured) return 1;
+        // Then by date
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      }),
     [events]
   );
 
@@ -115,6 +123,11 @@ export default function EventGrid({
 
                 {/* Netflix-style badges */}
                 <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
+                  {event.isFeatured && (
+                    <div className="bg-yellow-500 text-black px-2 py-1 rounded-full text-xs font-bold animate-pulse">
+                      ⭐ DESTAQUE
+                    </div>
+                  )}
                   {event.isToday && (
                     <div className="bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold animate-pulse">
                       🔥 HOJE
@@ -169,9 +182,9 @@ export default function EventGrid({
                     <div className="text-xs text-gray-300">
                       🕐 {event.startTime} - {event.endTime}
                     </div>
-                    {event.price && (
+                    {event.normalPrice && (
                       <div className="text-sm font-bold text-primary mt-2">
-                        {event.price.toFixed(2)}
+                        Kz {Number(event.normalPrice).toLocaleString()}
                       </div>
                     )}
                   </div>
