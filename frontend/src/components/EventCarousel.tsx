@@ -1,15 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
-type Event = {
-  id: number;
-  title: string;
-  description?: string | null;
-  date: string;
-  startTime: string;
-  endTime: string;
-  flyerPath?: string | null;
-};
+import { Event } from '../types/events';
 
 interface EventCarouselProps {
   events: Event[];
@@ -22,6 +14,7 @@ export default function EventCarousel({ events, title = "Próximos Eventos", cla
   const [isHovered, setIsHovered] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
   const autoPlayRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
 
   // Auto-play functionality
   const startAutoPlay = useCallback(() => {
@@ -75,6 +68,21 @@ export default function EventCarousel({ events, title = "Próximos Eventos", cla
     }
   };
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = (y - centerY) / 10;
+    const rotateY = (centerX - x) / 10;
+    setTilt({ x: rotateX, y: rotateY });
+  };
+
+  const handleMouseLeave = () => {
+    setTilt({ x: 0, y: 0 });
+  };
+
   if (events.length === 0) {
     return (
       <section className={`px-6 py-8 ${className}`}>
@@ -88,7 +96,7 @@ export default function EventCarousel({ events, title = "Próximos Eventos", cla
 
   return (
     <section
-      className={`px-6 py-8 ${className}`}
+      className={`px-6 py-8 fade-in ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onKeyDown={handleKeyDown}
@@ -157,7 +165,15 @@ export default function EventCarousel({ events, title = "Próximos Eventos", cla
                 to={`/events/${event.id}`}
                 className="block group no-underline text-white h-full"
               >
-                <div className="relative h-[480px] rounded-xl overflow-hidden bg-gradient-to-b from-gray-800 to-black shadow-2xl transform transition-all duration-500 hover:scale-105 hover:shadow-primary/20">
+                <div
+                  className="relative h-[480px] rounded-xl overflow-hidden bg-gradient-to-b from-gray-800 to-black shadow-2xl transform transition-all duration-500 hover:scale-105 hover:shadow-primary/20"
+                  onMouseMove={handleMouseMove}
+                  onMouseLeave={handleMouseLeave}
+                  style={{
+                    transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${tilt.x !== 0 || tilt.y !== 0 ? 1.05 : 1})`,
+                    boxShadow: tilt.x !== 0 || tilt.y !== 0 ? '0 25px 50px rgba(14, 165, 233, 0.3), 0 0 100px rgba(14, 165, 233, 0.2)' : '0 12px 40px rgba(0, 0, 0, 0.4)',
+                  }}
+                >
                   {/* Event Image */}
                   {event.flyerPath ? (
                     <img
@@ -188,8 +204,14 @@ export default function EventCarousel({ events, title = "Próximos Eventos", cla
                       <div className="text-sm text-gray-300 mb-1">
                         📅 {new Date(event.date).toLocaleDateString('pt-PT')}
                       </div>
-                      <div className="text-sm text-gray-300">
+                      <div className="text-sm text-gray-300 mb-1">
                         🕐 {event.startTime} - {event.endTime}
+                      </div>
+                      <div className="text-sm text-gray-300">
+                        💰 Normal: Kz {Number(event.normalPrice || 0).toLocaleString()}
+                        {event.vipPrice && event.vipPrice > 0 && (
+                          <span className="ml-2 text-yellow-400">VIP: Kz {Number(event.vipPrice).toLocaleString()}</span>
+                        )}
                       </div>
                     </div>
 

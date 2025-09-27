@@ -2,7 +2,7 @@ import React from 'react';
 
 interface InputFieldProps {
   label: string;
-  type?: 'text' | 'email' | 'password' | 'tel';
+  type?: 'text' | 'email' | 'password' | 'tel' | 'date' | 'time' | 'number';
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
@@ -10,6 +10,8 @@ interface InputFieldProps {
   disabled?: boolean;
   required?: boolean;
   error?: string;
+  step?: string;
+  currency?: boolean; // For number type, adds Kz prefix and currency formatting
 }
 
 export default function InputField({
@@ -21,8 +23,14 @@ export default function InputField({
   icon,
   disabled = false,
   required = false,
-  error
+  error,
+  step,
+  currency = false
 }: InputFieldProps) {
+  const isCurrency = type === 'number' && currency;
+  const inputStep = isCurrency ? '0.01' : (type === 'number' ? step : undefined);
+  const inputPlaceholder = isCurrency ? '0.00' : placeholder;
+
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium text-gray-200 flex items-center gap-2">
@@ -30,14 +38,21 @@ export default function InputField({
         {label}
       </label>
       <div className="relative">
+        {isCurrency && (
+          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 font-medium">
+            Kz
+          </span>
+        )}
         <input
-          className={`input-field ${error ? 'border-red-500/50 focus:ring-red-500/50' : ''}`}
+          className={`input-field ${error ? 'border-red-500/50 focus:ring-red-500/50' : ''} ${isCurrency ? 'pl-12' : ''}`}
           type={type}
           value={value}
           onChange={onChange}
-          placeholder={placeholder}
+          placeholder={inputPlaceholder}
           disabled={disabled}
           required={required}
+          step={inputStep}
+          min={isCurrency ? '0' : undefined}
           aria-invalid={error ? 'true' : 'false'}
           aria-describedby={error ? 'error-message' : undefined}
         />

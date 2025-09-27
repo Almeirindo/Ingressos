@@ -10,10 +10,13 @@ datasource db {
 model User {
   id        Int      @id @default(autoincrement())
   name      String   @db.VarChar(255)
-  email     String?  @unique @db.VarChar(255)
-  phone     String   @unique @db.VarChar(20)
+  email     String   @unique @db.VarChar(255)
+  phone     Int      @unique
   password  String   @db.VarChar(255)
   role      Role     @default(USER)
+  isActive  Boolean  @default(true) @map("is_active")
+  resetToken String? @map("reset_token")
+  resetExpires DateTime? @map("reset_expires")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -32,7 +35,8 @@ model Event {
   endTime          String   @map("end_time")
   totalTickets     Int      @default(100) @map("total_tickets")
   availableTickets Int      @default(100) @map("available_tickets")
-  price            Decimal  @default(0.00) @db.Decimal(10, 2)
+  normalPrice      Decimal  @default(0.00) @db.Decimal(10, 2) @map("normal_price")
+  vipPrice         Decimal  @default(0.00) @db.Decimal(10, 2) @map("vip_price")
   flyerPath        String?  @db.VarChar(500) @map("flyer_path")
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
@@ -43,16 +47,17 @@ model Event {
 }
 
 model Purchase {
-  id             Int      @id @default(autoincrement())
-  userId         Int      @map("user_id")
-  eventId        Int      @map("event_id")
-  quantity       Int      @default(1)
-  totalAmount    Decimal  @db.Decimal(10, 2) @map("total_amount")
-  status         Status   @default(PENDING)
-  uniqueTicketId String?  @unique @map("unique_ticket_id")
-  paymentProof   String?  @db.VarChar(500) @map("payment_proof")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  id             Int       @id @default(autoincrement())
+  userId         Int       @map("user_id")
+  eventId        Int       @map("event_id")
+  quantity       Int       @default(1)
+  ticketType     TicketType @default(NORMAL) @map("ticket_type")
+  totalAmount    Decimal   @db.Decimal(10, 2) @map("total_amount")
+  status         Status    @default(PENDING)
+  uniqueTicketId String?   @unique @map("unique_ticket_id")
+  paymentProof   String?   @db.VarChar(500) @map("payment_proof")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
@@ -69,4 +74,9 @@ enum Status {
   PENDING
   VALIDATED
   CANCELLED
+}
+
+enum TicketType {
+  NORMAL
+  VIP
 }

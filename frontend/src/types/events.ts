@@ -8,7 +8,8 @@ export interface Event {
   flyerPath?: string | null;
   totalTickets?: number;
   availableTickets?: number;
-  price?: number;
+  normalPrice?: number;
+  vipPrice?: number;
   ticketsSold?: number;
 }
 

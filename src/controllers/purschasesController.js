@@ -3,7 +3,7 @@ const generateTicketId = require('../utils/generateTicketId');
 
 exports.createPurchase = async (req, res) => {
   try {
-    const { eventId, quantity } = req.body;
+    const { eventId, quantity, ticketType } = req.body;
     const userId = req.user.id;
     const paymentProof = req.file ? `/uploads/proofs/${req.file.filename}` : null;
 
@@ -15,6 +15,9 @@ exports.createPurchase = async (req, res) => {
     }
     if (!Number.isFinite(quantityInt) || quantityInt <= 0) {
       return res.status(400).json({ error: 'quantity deve ser um inteiro positivo.' });
+    }
+    if (!['NORMAL', 'VIP'].includes(ticketType)) {
+      return res.status(400).json({ error: 'Tipo de ingresso inválido. Use NORMAL ou VIP.' });
     }
 
     // Verificar se o evento existe
@@ -42,8 +45,9 @@ exports.createPurchase = async (req, res) => {
       return res.status(400).json({ error: 'Ingressos indisponíveis para a quantidade solicitada.' });
     }
 
-    // Calcular valor total
-    const totalAmount = Number(event.price) * quantityInt;
+    // Calcular valor total baseado no tipo de ingresso
+    const price = ticketType === 'VIP' ? Number(event.vipPrice) : Number(event.normalPrice);
+    const totalAmount = price * quantityInt;
 
     // Gerar ID único do ingresso
     const uniqueTicketId = generateTicketId(userId, eventIdInt);
@@ -56,6 +60,7 @@ exports.createPurchase = async (req, res) => {
           userId,
           eventId: eventIdInt,
           quantity: quantityInt,
+          ticketType,
           totalAmount,
           uniqueTicketId,
           paymentProof,
@@ -79,7 +84,8 @@ exports.createPurchase = async (req, res) => {
         quantity: purchase.quantity,
         totalAmount: Number(purchase.totalAmount),
         uniqueTicketId: purchase.uniqueTicketId,
-        status: purchase.status
+        status: purchase.status,
+        ticketType: purchase.ticketType
       },
       paymentInfo: {
         iban: process.env.BANK_IBAN,

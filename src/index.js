@@ -8,6 +8,7 @@ const fs = require('fs');
 const authRoutes = require('./routes/auth');
 const eventsRoutes = require('./routes/events');
 const purchasesRoutes = require('./routes/purchases');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -35,6 +36,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventsRoutes);
 app.use('/api/purchases', purchasesRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Rota de saúde
 app.get('/api/health', (req, res) => {

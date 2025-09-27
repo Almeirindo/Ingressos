@@ -94,6 +94,51 @@ exports.getAllEvents = async (req, res) => {
   }
 };
 
+exports.searchEvents = async (req, res) => {
+  try {
+    const { query, startDate, endDate } = req.query;
+
+    let whereClause = {};
+
+    // Add text search if query is provided
+    if (query) {
+      whereClause = {
+        ...whereClause,
+        OR: [
+          { title: { contains: query } },
+          { description: { contains: query } }
+        ]
+      };
+    }
+
+    // Add date range filter if provided
+    if (startDate || endDate) {
+      whereClause = {
+        ...whereClause,
+        date: {
+          ...(startDate && { gte: new Date(startDate) }),
+          ...(endDate && { lte: new Date(endDate) })
+        }
+      };
+    }
+
+    const events = await prisma.event.findMany({
+      where: whereClause,
+      orderBy: { date: 'asc' }
+    });
+
+    const eventsWithStats = events.map(event => ({
+      ...transformEventForResponse(event),
+      ticketsSold: event.totalTickets - event.availableTickets
+    }));
+
+    res.json(eventsWithStats);
+  } catch (error) {
+    console.error('Erro ao buscar eventos:', error);
+    res.status(500).json({ error: 'Erro interno do servidor.' });
+  }
+};
+
 exports.getEventById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -163,11 +208,11 @@ exports.getEventSummary = async (req, res) => {
 
 exports.createEvent = async (req, res) => {
   try {
-    const { title, description, date, startTime, endTime, totalTickets, price } = req.body;
+    const { title, description, date, startTime, endTime, totalTickets, normalPrice, vipPrice } = req.body;
     const flyerPath = req.file ? `/uploads/flyers/${req.file.filename}` : null;
     // Validações básicas
-    if (!title || !date || !startTime || !endTime || !totalTickets || !price) {
-      return res.status(400).json({ error: 'Campos obrigatórios: title, date, startTime, endTime, totalTickets, price.' });
+    if (!title || !date || !startTime || !endTime || !totalTickets || !normalPrice || !vipPrice) {
+      return res.status(400).json({ error: 'Campos obrigatórios: title, date, startTime, endTime, totalTickets, normalPrice, vipPrice.' });
     }
     if (!isValidISODateOnly(date)) {
       return res.status(400).json({ error: 'Formato de data inválido. Use YYYY-MM-DD.' });
@@ -178,12 +223,16 @@ exports.createEvent = async (req, res) => {
       return res.status(400).json({ error: 'Formato de hora inválido. Use HH:mm (00-23:00-59).' });
     }
     const ticketsInt = parseInt(totalTickets);
-    const priceNum = parseFloat(price);
+    const normalPriceNum = parseFloat(normalPrice);
+    const vipPriceNum = parseFloat(vipPrice);
     if (!Number.isFinite(ticketsInt) || ticketsInt <= 0) {
       return res.status(400).json({ error: 'totalTickets deve ser um inteiro positivo.' });
     }
-    if (!Number.isFinite(priceNum) || priceNum < 0) {
-      return res.status(400).json({ error: 'price deve ser um número >= 0.' });
+    if (!Number.isFinite(normalPriceNum) || normalPriceNum < 0) {
+      return res.status(400).json({ error: 'normalPrice deve ser um número >= 0.' });
+    }
+    if (!Number.isFinite(vipPriceNum) || vipPriceNum < 0) {
+      return res.status(400).json({ error: 'vipPrice deve ser um número >= 0.' });
     }
 
     const event = await prisma.event.create({
@@ -195,7 +244,8 @@ exports.createEvent = async (req, res) => {
         endTime: normEnd,
         totalTickets: ticketsInt,
         availableTickets: ticketsInt,
-        price: priceNum,
+        normalPrice: normalPriceNum,
+        vipPrice: vipPriceNum,
         flyerPath
       }
     });
@@ -213,7 +263,7 @@ exports.createEvent = async (req, res) => {
 exports.updateEvent = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, date, startTime, endTime, totalTickets, price } = req.body;
+    const { title, description, date, startTime, endTime, totalTickets, normalPrice, vipPrice } = req.body;
     const flyerPath = req.file ? `/uploads/flyers/${req.file.filename}` : undefined;
 
     // Monta payload com validações condicionais
@@ -243,12 +293,19 @@ exports.updateEvent = async (req, res) => {
       }
       data.totalTickets = ticketsInt;
     }
-    if (typeof price !== 'undefined') {
-      const priceNum = parseFloat(price);
-      if (!Number.isFinite(priceNum) || priceNum < 0) {
-        return res.status(400).json({ error: 'price deve ser um número >= 0.' });
+    if (typeof normalPrice !== 'undefined') {
+      const normalPriceNum = parseFloat(normalPrice);
+      if (!Number.isFinite(normalPriceNum) || normalPriceNum < 0) {
+        return res.status(400).json({ error: 'normalPrice deve ser um número >= 0.' });
       }
-      data.price = priceNum;
+      data.normalPrice = normalPriceNum;
+    }
+    if (typeof vipPrice !== 'undefined') {
+      const vipPriceNum = parseFloat(vipPrice);
+      if (!Number.isFinite(vipPriceNum) || vipPriceNum < 0) {
+        return res.status(400).json({ error: 'vipPrice deve ser um número >= 0.' });
+      }
+      data.vipPrice = vipPriceNum;
     }
     if (typeof flyerPath !== 'undefined') data.flyerPath = flyerPath;
 

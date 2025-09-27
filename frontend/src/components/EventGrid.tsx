@@ -171,7 +171,7 @@ export default function EventGrid({
                     </div>
                     {event.price && (
                       <div className="text-sm font-bold text-primary mt-2">
-                        €{event.price.toFixed(2)}
+                        {event.price.toFixed(2)}
                       </div>
                     )}
                   </div>

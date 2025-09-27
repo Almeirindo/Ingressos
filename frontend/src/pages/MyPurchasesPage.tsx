@@ -7,6 +7,7 @@ type Purchase = {
   totalAmount: number;
   status: 'PENDING' | 'VALIDATED' | 'CANCELLED';
   uniqueTicketId: string;
+  ticketType: 'NORMAL' | 'VIP';
   event: {
     title: string;
     date: string;
@@ -49,6 +50,14 @@ export default function MyPurchasesPage() {
                   <span>{p.quantity} ingresso{p.quantity > 1 ? 's' : ''}</span>
                 </div>
                 <div className="flex justify-between">
+                  <span className="text-gray-400">Tipo:</span>
+                  <span className={`px-2 py-1 rounded text-xs ${
+                    p.ticketType === 'VIP' ? 'bg-yellow-600 text-white' : 'bg-green-600 text-white'
+                  }`}>
+                    {p.ticketType === 'VIP' ? 'vip' : 'normal'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
                   <span className="text-gray-400">Total:</span>
                   <span className="font-semibold">Kz {Number(p.totalAmount).toLocaleString()}</span>
                 </div>
@@ -59,7 +68,7 @@ export default function MyPurchasesPage() {
                     p.status === 'PENDING' ? 'bg-yellow-600 text-white' :
                     'bg-red-600 text-white'
                   }`}>
-                    {p.status === 'VALIDATED' ? 'Validado' : 
+                    {p.status === 'VALIDATED' ? 'Validado' :
                      p.status === 'PENDING' ? 'Pendente' : 'Cancelado'}
                   </span>
                 </div>

@@ -61,11 +61,7 @@ export default function AdminUsersPurchasesPage() {
                 <td className="p-3">{p.quantity}</td>
                 <td className="p-3">Kz {Number(p.totalAmount).toLocaleString()}</td>
                 <td className="p-3">
-                  <span className={`px-2 py-1 rounded text-xs ${
-                    p.status === 'VALIDATED' ? 'bg-green-600 text-white' :
-                    p.status === 'PENDING' ? 'bg-yellow-600 text-white' :
-                    'bg-red-600 text-white'
-                  }`}>
+                  <span className={`px-2 py-1 rounded text-xs ${p.status === 'VALIDATED' ? 'bg-green-600 text-white' : p.status === 'PENDING' ? 'bg-yellow-600 text-white' : 'bg-red-600 text-white'}`}>
                     {p.status}
                   </span>
                 </td>
@@ -93,4 +89,3 @@ export default function AdminUsersPurchasesPage() {
     </div>
   );
 }
-

@@ -91,6 +91,17 @@ export default function LoginPage() {
               }
             />
 
+            {/* Forgot Password Link */}
+            <div className="text-right">
+              <Link
+                className="text-primary hover:text-blue-300 text-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 rounded"
+                to="/forgot-password"
+                aria-label="Esqueci minha senha"
+              >
+                Esqueceu a senha?
+              </Link>
+            </div>
+
             {/* Error Message */}
             {error && (
               <div

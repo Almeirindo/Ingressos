@@ -7,6 +7,7 @@ const router = express.Router();
 
 // Rotas públicas
 router.get('/', eventsController.getAllEvents);
+router.get('/search', eventsController.searchEvents);
 router.get('/:id', eventsController.getEventById);
 router.get('/:id/summary', eventsController.getEventSummary);
 

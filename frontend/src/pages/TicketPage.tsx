@@ -8,6 +8,7 @@ type Purchase = {
   totalAmount: number;
   status: 'PENDING' | 'VALIDATED' | 'CANCELLED';
   uniqueTicketId: string;
+  ticketType: 'NORMAL' | 'VIP';
   event: {
     title: string;
     date: string;
@@ -20,7 +21,7 @@ type Purchase = {
 export default function TicketPage() {
   const { id } = useParams();
   const nav = useNavigate();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [purchase, setPurchase] = useState<Purchase | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -83,7 +84,7 @@ export default function TicketPage() {
   }
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="p-6 max-w-4xl mx-auto">
       {/* Botões de ação */}
       <div className="mb-6 flex gap-3 justify-between">
         <button onClick={() => nav('/me/purchases')} className="px-4 py-2 bg-white/10 rounded">
@@ -94,84 +95,108 @@ export default function TicketPage() {
         </button>
       </div>
 
-      {/* Ticket */}
-      <div className="bg-gradient-to-br from-primary/10 to-purple-600/10 border-2 border-primary/30 rounded-2xl overflow-hidden print:border-black print:bg-white">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-primary to-purple-600 text-black p-6 text-center">
-          <h1 className="text-2xl font-bold mb-2">INGRESSOS DA BANDA</h1>
-          <div className="text-sm font-semibold">TICKET DE ENTRADA</div>
-        </div>
-
-        {/* Conteúdo */}
-        <div className="p-6">
-          {/* Código do ticket */}
-          <div className="text-center mb-6">
-            <div className="text-sm text-gray-400 mb-2">CÓDIGO ÚNICO</div>
-            <div className="font-mono text-3xl font-bold text-primary bg-black/20 p-4 rounded-lg">
-              {purchase.uniqueTicketId}
-            </div>
-          </div>
-
-          {/* Informações do evento */}
-          <div className="mb-6">
-            <h2 className="text-xl font-bold mb-4">{purchase.event.title}</h2>
-            
-            {purchase.event.flyerPath && (
-              <div className="mb-4">
-                <img 
-                  src={purchase.event.flyerPath} 
-                  alt={purchase.event.title} 
-                  className="w-full max-w-xs mx-auto rounded-lg"
-                />
+      {/* Rectangular Ticket Design */}
+      <div className="ticket-container bg-white border-2 border-gray-300 rounded-lg overflow-hidden shadow-lg print:shadow-none w-full max-w-4xl mx-auto h-auto min-h-[300px] lg:min-h-[400px]">
+        <div className="flex flex-col lg:flex-row h-auto lg:h-[400px]">
+          {/* Left Side - Event Image */}
+          <div className="w-full lg:w-2/5 h-48 lg:h-full flex-shrink-0 bg-gradient-to-br from-purple-900 to-blue-900 p-2">
+            {purchase.event.flyerPath ? (
+              <img
+                src={purchase.event.flyerPath}
+                alt={purchase.event.title}
+                className="w-full h-full object-cover rounded"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 rounded flex items-center justify-center">
+                <div className="text-white text-center">
+                  <div className="text-4xl mb-2">🎫</div>
+                  <div className="text-sm font-semibold">{purchase.event.title}</div>
+                </div>
               </div>
             )}
-
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <div className="text-gray-400">Data:</div>
-                <div className="font-semibold">{purchase.event.date}</div>
-              </div>
-              <div>
-                <div className="text-gray-400">Horário:</div>
-                <div className="font-semibold">{purchase.event.startTime} - {purchase.event.endTime}</div>
-              </div>
-            </div>
           </div>
 
-          {/* Informações da compra */}
-          <div className="border-t border-white/10 pt-4">
-            <div className="grid grid-cols-2 gap-4 text-sm mb-4">
-              <div>
-                <div className="text-gray-400">Quantidade:</div>
-                <div className="font-semibold">{purchase.quantity} ingresso{purchase.quantity > 1 ? 's' : ''}</div>
+          {/* Right Side - Event Details */}
+          <div className="w-full lg:w-3/5 p-4 lg:p-6 flex flex-col justify-between">
+            {/* Header with Title and Check-in */}
+            <div className="flex flex-col lg:flex-row justify-between items-start mb-2 lg:mb-4">
+              <div className="flex-1 mb-2 lg:mb-0">
+                <h1 className="text-xl lg:text-2xl font-bold text-gray-800 mb-2">{purchase.event.title}</h1>
+                <div className="text-gray-600 mb-1">
+                  <span className="font-semibold">{purchase.ticketType === 'VIP' ? 'VIP' : 'Normal'}</span> | {Number(purchase.totalAmount).toLocaleString()} Kz
+                </div>
+                <div className="text-gray-600 mb-1">
+                  Quantidade: {purchase.quantity} {purchase.quantity > 1 ? 'ingressos' : 'ingresso'}
+                </div>
+                <div className="text-gray-600 text-sm">
+                  {purchase.event.date} {purchase.event.startTime} - {purchase.event.endTime}
+                </div>
               </div>
-              <div>
-                <div className="text-gray-400">Valor Total:</div>
-                <div className="font-semibold">Kz {Number(purchase.totalAmount).toLocaleString()}</div>
+
+              {/* Check-in Logo */}
+              <div className="text-right ml-0 lg:ml-4">
+                <div className="flex items-center justify-end mb-2">
+                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-2">
+                    <span className="text-white text-sm font-bold">✓</span>
+                  </div>
+                  <span className="text-blue-600 font-bold">Check-in</span>
+                </div>
+                <div className="text-xs text-gray-500">POWERED BY check-in.ao</div>
               </div>
             </div>
 
-            <div className="bg-green-600/20 border border-green-600/30 rounded-lg p-3 text-center">
-              <div className="text-green-400 font-semibold">✓ TICKET VALIDADO</div>
-              <div className="text-sm text-gray-300 mt-1">Apresente este código na entrada do evento</div>
+            {/* E-Ticket Section */}
+            <div className="bg-gray-100 rounded-lg p-3 lg:p-4 mb-2 lg:mb-4">
+              <div className="text-center">
+                <div className="text-sm text-gray-600 mb-1">E-Ticket</div>
+                <div className="font-mono text-base lg:text-lg font-bold text-gray-800">
+                  {purchase.uniqueTicketId}
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* Instruções */}
-          <div className="mt-6 text-xs text-gray-400 text-center">
-            <p>• Este ticket é válido apenas para o evento especificado</p>
-            <p>• Apresente o código único na entrada</p>
-            <p>• Não é transferível</p>
+            {/* User Info */}
+            <div className="mb-2 lg:mb-4">
+              <div className="text-sm text-gray-600 mb-1">Nome</div>
+              <div className="font-semibold text-gray-800">{user?.name || 'N/A'}</div>
+            </div>
+
+            {/* Footer Notes */}
+            <div className="text-xs text-gray-500 text-center mt-auto">
+              <p>• {purchase.quantity > 1 ? `Este ticket equivale a ${purchase.quantity} ingressos válidos para o evento especificado` : 'Este ticket é válido apenas para o evento especificado'}</p>
+              <p>• Apresente o código único na entrada</p>
+              <p>• Não é transferível</p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Estilos para impressão */}
-      <style jsx>{`
+      <style>{`
         @media print {
           body { background: white !important; }
-          .print\\:border-black { border-color: black !important; }
-          .print\\:bg-white { background: white !important; }
+          .print\\:shadow-none { box-shadow: none !important; }
+          .ticket-container {
+            box-shadow: none !important;
+            width: 800px !important;
+            height: 400px !important;
+            display: flex !important;
+            flex-direction: row !important;
+          }
+          .ticket-container > div:first-child {
+            width: 100% !important;
+            height: 400px !important;
+            flex-direction: row !important;
+          }
+          .ticket-container .w-full {
+            width: 40% !important;
+          }
+          .ticket-container .lg\\:w-3\\/5 {
+            width: 60% !important;
+          }
+          .ticket-container h1 {
+            font-size: 1.5rem !important;
+          }
         }
       `}</style>
     </div>
