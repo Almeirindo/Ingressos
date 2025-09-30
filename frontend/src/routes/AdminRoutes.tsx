@@ -1,48 +1,11 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Route } from "react-router-dom";
+import AdminEventsPage from "../pages/admin/AdminEventsPage";
+import AdminUsersPage from "../pages/admin/AdminUsersPage";
+import AdminUsersPurchasesPage from "../pages/admin/AdminUsersPurchasesPage";
+import { AdminRouteWrapper } from "../helpers/AdminRouteWrapper";
 
-import { AuthProvider, useAuth } from '../contexts/AuthContext';
-
-
-import AdminUsersPage from '../pages/admin/AdminUsersPage';
-import AdminEventsPage from '../pages/admin/AdminEventsPage';
-import AdminUsersPurchasesPage from '../pages/admin/AdminUsersPurchasesPage';
-
-function AdminRoute({ children }: { children: React.ReactElement }) {
-    const { user } = useAuth();
-    return user?.role === 'ADMIN' ? children : <Navigate to="/" replace />;
-}
-
-
-export default function AdminRoutes() {
-
-    return (
-        <Routes>
-
-            <Route
-                path="/admin/events"
-                element={
-                    <AdminRoute>
-                        <AdminEventsPage />
-                    </AdminRoute>
-                }
-            />
-            <Route
-                path="/admin/users"
-                element={
-                    <AdminRoute>
-                        <AdminUsersPage />
-                    </AdminRoute>
-                }
-            />
-            <Route
-                path="/admin/users-purchases"
-                element={
-                    <AdminRoute>
-                        <AdminUsersPurchasesPage />
-                    </AdminRoute>
-                }
-            />
-        </Routes>
-    )
-
-}
+export const adminRoutes = [
+    <Route path="/admin/events" element={<AdminRouteWrapper><AdminEventsPage /></AdminRouteWrapper>} key="/admin/events" />,
+    <Route path="/admin/users" element={<AdminRouteWrapper><AdminUsersPage /></AdminRouteWrapper>} key="/admin/users" />,
+    <Route path="/admin/users-purchases" element={<AdminRouteWrapper><AdminUsersPurchasesPage /></AdminRouteWrapper>} key="/admin/users-purchases" />,
+];

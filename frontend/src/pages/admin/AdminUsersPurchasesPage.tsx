@@ -11,19 +11,36 @@ type Purchase = {
   event: { title: string; date: string };
 };
 
+
+
 export default function AdminUsersPurchasesPage() {
   const { token } = useAuth();
   const [purchases, setPurchases] = useState<Purchase[]>([]);
 
   async function load() {
-    const r = await fetch('/api/purchases', { headers: { Authorization: `Bearer ${token}` } });
-    const d = await r.json();
-    setPurchases(d);
+    const res = await fetch('/api/purchases', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const data = await res.json();
+    // console.log("API result:", data);
+
+    if (Array.isArray(data)) {
+      setPurchases(data);
+    } else {
+      console.error("Erro da API:", data.error);
+      setPurchases([]);
+    }
   }
+
   useEffect(() => { if (token) load(); }, [token]);
 
-  async function setStatus(id: number, status: 'PENDING'|'VALIDATED'|'CANCELLED') {
-    const r = await fetch(`/api/purchases/${id}/status`, {
+
+  async function setStatus(
+    id: number,
+    status: 'PENDING' | 'VALIDATED' | 'CANCELLED'
+  ) {
+    const res = await fetch(`/api/purchases/${id}/status`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -31,9 +48,16 @@ export default function AdminUsersPurchasesPage() {
       },
       body: JSON.stringify({ status })
     });
-    if (!r.ok) { const d = await r.json(); alert(d.error || 'Erro ao atualizar status'); return; }
+
+    if (!res.ok) {
+      const data = await res.json();
+      alert(data.error || 'Erro ao atualizar status');
+      return;
+    }
     await load();
   }
+
+
 
   return (
     <div className="p-6">
@@ -42,14 +66,14 @@ export default function AdminUsersPurchasesPage() {
         <table className="w-full text-left">
           <thead>
             <tr className="border-b border-white/10">
-            <th className="p-3">Usuário</th>
-            <th className="p-3">Contato</th>
-            <th className="p-3">Evento</th>
-            <th className="p-3">Qtd</th>
-            <th className="p-3">Total</th>
-            <th className="p-3">Status</th>
-            <th className="p-3">Ticket ID</th>
-            <th className="p-3">Ações</th>
+              <th className="p-3">Usuário</th>
+              <th className="p-3">Contato</th>
+              <th className="p-3">Evento</th>
+              <th className="p-3">Qtd</th>
+              <th className="p-3">Total</th>
+              <th className="p-3">Status</th>
+              <th className="p-3">Ticket ID</th>
+              <th className="p-3">Ações</th>
             </tr>
           </thead>
           <tbody>

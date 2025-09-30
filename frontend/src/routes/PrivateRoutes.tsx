@@ -1,45 +1,43 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from '../contexts/AuthContext';
+// routes/privateRoutes.tsx
+import { Route } from "react-router-dom";
+import MyPurchasesPage from "../pages/MyPurchasesPage";
+import ProfilePage from "../pages/ProfilePage";
+import PaymentPage from "../pages/PaymentPage";
+import TicketPage from "../pages/TicketPage";
+import { PrivateRouteWrapper } from "../helpers/PrivateRouteWrapper";
 
-// Páginas (users)
-import MyPurchasesPage from '../pages/MyPurchasesPage';
-import TicketPage from '../pages/TicketPage';
-import PaymentPage from '../pages/PaymentPage';
-import ProfilePage from '../pages/ProfilePage';
+export const privateRoutes = [
+    <Route
+        path="/me/purchases"
+        element={
+            <PrivateRouteWrapper>
+                <MyPurchasesPage />
+            </PrivateRouteWrapper>}
+        key="/me/purchases" />,
 
+    <Route
+        path="/profile"
+        element={
+            <PrivateRouteWrapper>
+                <ProfilePage />
+            </PrivateRouteWrapper>}
+        key="/profile" />,
 
-function PrivateRoute({ children }: { children: React.ReactElement }) {
-    const { token } = useAuth();
-    return token ? children : <Navigate to="/login" replace />;
-}
+    <Route
+        path="/payment"
+        element={
+            <PrivateRouteWrapper>
+                <PaymentPage />
+            </PrivateRouteWrapper>
+        }
+        key="/payment" />,
 
-
-
-export default function PrivateRoutes() {
-    return (
-
-        <Routes>
-            <Route
-                path="/me/purchases"
-                element={
-                    <PrivateRoute>
-                        <MyPurchasesPage />
-                    </PrivateRoute>
-                }
-            />
-            <Route
-                path="/profile"
-                element={
-                    <PrivateRoute>
-                        <ProfilePage />
-                    </PrivateRoute>
-                }
-            />
-            <Route path="/payment" element={<PaymentPage />} />
-            <Route path="/ticket/:id" element={<TicketPage />} />
-
-
-        </Routes>
-
-    )
-}
+    <Route
+        path="/ticket/:id"
+        element={
+            <PrivateRouteWrapper>
+                <TicketPage />
+            </PrivateRouteWrapper>
+        }
+        key="/ticket/:id" />,
+];

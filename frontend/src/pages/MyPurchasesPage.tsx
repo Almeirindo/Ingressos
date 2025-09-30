@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
+import { getImageUrl } from "../utils/getImageUrl";
+
+
 type Purchase = {
   id: number;
   quantity: number;
@@ -31,19 +34,50 @@ export default function MyPurchasesPage() {
       .catch(() => setPurchases([]));
   }, [token]);
 
+  // const loadPurchages = async () => {
+  //   try {
+  //     const res = await fetch('/api/purchases/my-purchases', {
+  //       headers: { 'Authorization': `Bearer ${token}` }
+  //     })
+  //     const data = await res.json()
+  //     console.log(data)
+
+  //   } catch (error) {
+  //     console.error(error);
+  //     setPurchases([])
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   if (!token) return;
+  //   loadPurchages()
+  // }, [token])
+
+
+
+
   return (
     <div className="p-6">
       <h2 className="text-2xl font-semibold mb-4">Minhas Compras</h2>
       <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4">
         {purchases.map(p => (
           <div key={p.id} className="border border-white/10 rounded-lg overflow-hidden">
-            {p.event.flyerPath && (
-              <img src={p.event.flyerPath} alt={p.event.title} className="w-full h-[180px] object-cover" />
+
+            {p.event.flyerPath ? (
+              <img
+                src={getImageUrl(p.event.flyerPath)}
+                alt={p.event.title}
+                className="h-1/2 w-full rounded object-cover"
+              />
+            ) : (
+              <span className="text-gray-400 text-xs">Sem flyer</span>
             )}
+
+
             <div className="p-4">
               <div className="font-semibold text-lg mb-2">{p.event.title}</div>
               <div className="text-sm text-gray-300 mb-3">{p.event.date} • {p.event.startTime} - {p.event.endTime}</div>
-              
+
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Quantidade:</span>
@@ -51,9 +85,8 @@ export default function MyPurchasesPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Tipo:</span>
-                  <span className={`px-2 py-1 rounded text-xs ${
-                    p.ticketType === 'VIP' ? 'bg-yellow-600 text-white' : 'bg-green-600 text-white'
-                  }`}>
+                  <span className={`px-2 py-1 rounded text-xs ${p.ticketType === 'VIP' ? 'bg-yellow-600 text-white' : 'bg-green-600 text-white'
+                    }`}>
                     {p.ticketType === 'VIP' ? 'vip' : 'normal'}
                   </span>
                 </div>
@@ -63,16 +96,16 @@ export default function MyPurchasesPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Status:</span>
-                  <span className={`px-2 py-1 rounded text-xs ${
-                    p.status === 'VALIDATED' ? 'bg-green-600 text-white' :
+                  <span className={`px-2 py-1 rounded text-xs ${p.status === 'VALIDATED' ? 'bg-green-600 text-white' :
                     p.status === 'PENDING' ? 'bg-yellow-600 text-white' :
-                    'bg-red-600 text-white'
-                  }`}>
+                      'bg-red-600 text-white'
+                    }`}>
                     {p.status === 'VALIDATED' ? 'Validado' :
-                     p.status === 'PENDING' ? 'Pendente' : 'Cancelado'}
+                      p.status === 'PENDING' ? 'Pendente' : 'Cancelado'}
                   </span>
                 </div>
               </div>
+
 
               {/* Ticket único - só aparece se validado */}
               {p.status === 'VALIDATED' && p.uniqueTicketId && (
@@ -86,7 +119,7 @@ export default function MyPurchasesPage() {
                       <div className="text-xs text-gray-300 mb-3">
                         Apresente este código na entrada do evento
                       </div>
-                      <a 
+                      <a
                         href={`/ticket/${p.id}`}
                         className="inline-block px-3 py-1 bg-primary text-black rounded text-sm font-semibold hover:brightness-110"
                       >
