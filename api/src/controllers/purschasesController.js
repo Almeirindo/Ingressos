@@ -139,15 +139,12 @@ exports.getUserPurchases = async (req, res) => {
   }
 };
 
-
 //função para percorrer array de compras e converter bigint para strings
 function serializeBigInt(obj) {
   return JSON.parse(JSON.stringify(obj, (key, value) =>
     typeof value === 'bigint' ? value.toString() : value
   ))
 }
-
-
 exports.getAllPurchases = async (req, res) => {
   try {
     const purchases = await prisma.purchase.findMany({
