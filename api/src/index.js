@@ -30,7 +30,7 @@ uploadDirs.forEach(dir => {
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // Rotas
 app.use('/api/auth', authRoutes);
@@ -54,6 +54,7 @@ app.get('/api/payment-info', (req, res) => {
     instructions: 'Faça a transferência e envie o comprovante via WhatsApp para validação dos ingressos.'
   });
 });
+
 
 // Middleware de erro
 app.use((error, req, res, next) => {

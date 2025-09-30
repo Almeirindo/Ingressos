@@ -126,9 +126,9 @@ exports.getUserPurchases = async (req, res) => {
       event: p.event && {
         ...p.event,
         // datas e horas já são normalizadas no eventsController, mas garantimos formato simples aqui
-        date: p.event.date ? new Date(p.event.date).toISOString().slice(0,10) : null,
-        startTime: typeof p.event.startTime === 'string' ? p.event.startTime.slice(0,5) : p.event.startTime,
-        endTime: typeof p.event.endTime === 'string' ? p.event.endTime.slice(0,5) : p.event.endTime
+        date: p.event.date ? new Date(p.event.date).toISOString().slice(0, 10) : null,
+        startTime: typeof p.event.startTime === 'string' ? p.event.startTime.slice(0, 5) : p.event.startTime,
+        endTime: typeof p.event.endTime === 'string' ? p.event.endTime.slice(0, 5) : p.event.endTime
       }
     }));
 
@@ -139,37 +139,37 @@ exports.getUserPurchases = async (req, res) => {
   }
 };
 
+
+//função para percorrer array de compras e converter bigint para strings
+function serializeBigInt(obj) {
+  return JSON.parse(JSON.stringify(obj, (key, value) =>
+    typeof value === 'bigint' ? value.toString() : value
+  ))
+}
+
+
 exports.getAllPurchases = async (req, res) => {
   try {
     const purchases = await prisma.purchase.findMany({
       include: {
         user: {
           select: {
-            name: true,
-            phone: true,
-            email: true
+            name: true, phone: true, email: true
           }
         },
         event: {
           select: {
-            title: true,
-            date: true
+            title: true, date: true
           }
         }
       },
       orderBy: { createdAt: 'desc' }
     });
 
-    res.json(
-      purchases.map(p => ({
-        ...p,
-        totalAmount: Number(p.totalAmount),
-        event: p.event && {
-          ...p.event,
-          date: p.event.date ? new Date(p.event.date).toISOString().slice(0,10) : null
-        }
-      }))
-    );
+    const safePurchases = purchases.map(p => serializeBigInt(p))
+    res.json
+    (safePurchases)    
+
   } catch (error) {
     console.error('Erro ao buscar todas as compras:', error);
     res.status(500).json({ error: 'Erro interno do servidor.' });
