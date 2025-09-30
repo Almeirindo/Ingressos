@@ -11,13 +11,13 @@ import AppRoutes from './routes/AppRoutes';
 export default function App() {
   return (
     <AuthProvider>
-      <NavBar />
+      {/* <NavBar /> */}
       
       {/* <div className="max-w-6xl mx-auto"> */}
-      <div className="max-w-6xl mx-auto">
+      <main className="">
         <AppRoutes />
-      </div>
-      <Footer />
+      </main>
+      {/* <Footer /> */}
       
     </AuthProvider>
   );

@@ -26,7 +26,7 @@ export default function LoginPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erro no login');
       login(data.token, data.user);
-      nav('/');
+      nav('/dashboard');
     } catch (err: any) {
       setError(err.message);
     } finally {

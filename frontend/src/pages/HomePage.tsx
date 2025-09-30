@@ -75,7 +75,7 @@ export default function HomePage() {
   return (
 
     <>
-      {/* <NavBar /> */}
+      <NavBar />
       <div className="pb-10">
         {/* Hero */}
         <section className="relative h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-dark overflow-hidden animate-gradient-shift">
@@ -89,6 +89,7 @@ export default function HomePage() {
             <Link to="/events" className="inline-block px-8 py-4 bg-gradient-to-r from-primary to-purple-600 text-black font-semibold rounded-full hover:from-primary/90 hover:to-purple-500 hover:scale-105 shadow-lg shadow-primary/25 animate-pulse transition-all duration-300">Ver Eventos</Link>
           </div>
         </section>
+
 
         {/* Event Carousel - Netflix Style */}
         <EventGrid events={events} title="Eventos" />
