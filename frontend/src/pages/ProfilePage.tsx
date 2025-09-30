@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../auth/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import Card from '../components/ui/Card';
 import InputField from '../components/ui/InputField';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
