@@ -1,59 +1,29 @@
 // routes/privateRoutes.tsx
 import { Route } from "react-router-dom";
-import MyPurchasesPage from "../pages/MyPurchasesPage";
-import ProfilePage from "../pages/ProfilePage";
-import PaymentPage from "../pages/PaymentPage";
-import TicketPage from "../pages/TicketPage";
+import MyPurchasesPage from "../pages/profile/MyPurchasesPage";
+import ProfilePage from "../pages/profile/ProfilePage";
+import PaymentPage from "../pages/profile/PaymentPage";
+import TicketPage from "../pages/profile/TicketPage";
+import Dashboard from "../pages/profile/Dashboard";
+import EventsPage from "../pages/profile/ProfileEventsPage"; // 👈 usa a versão profile
 import { PrivateRouteWrapper } from "../helpers/PrivateRouteWrapper";
-import Dashboard from "../pages/Dashboard";
-import EventsPage from "../pages/EventsPage";
+import ProfileLayout from "../layouts/ProfileLayout";
 
 export const privateRoutes = [
-    <Route
-        path="/dashboard"
-        element={
-            <PrivateRouteWrapper>
-                <Dashboard />
-            </PrivateRouteWrapper>}
-        key="/dashboard" />,
-    <Route
-        path="/me/events"
-        element={
-            <PrivateRouteWrapper>
-                <EventsPage />
-            </PrivateRouteWrapper>}
-        key="/me/events" />,
-    <Route
-        path="/me/purchases"
-        element={
-            <PrivateRouteWrapper>
-                <MyPurchasesPage />
-            </PrivateRouteWrapper>}
-        key="/me/purchases" />,
-
-    <Route
-        path="/profile"
-        element={
-            <PrivateRouteWrapper>
-                <ProfilePage />
-            </PrivateRouteWrapper>}
-        key="/profile" />,
-
-    <Route
-        path="/payment"
-        element={
-            <PrivateRouteWrapper>
-                <PaymentPage />
-            </PrivateRouteWrapper>
-        }
-        key="/payment" />,
-
-    <Route
-        path="/ticket/:id"
-        element={
-            <PrivateRouteWrapper>
-                <TicketPage />
-            </PrivateRouteWrapper>
-        }
-        key="/ticket/:id" />,
+  <Route
+    path="/"
+    element={
+      <PrivateRouteWrapper>
+        <ProfileLayout />
+      </PrivateRouteWrapper>
+    }
+    key="profile-layout"
+  >
+    <Route path="dashboard" element={<Dashboard />} />
+    <Route path="me/events" element={<EventsPage />} />
+    <Route path="me/purchases" element={<MyPurchasesPage />} />
+    <Route path="profile" element={<ProfilePage />} />
+    <Route path="payment" element={<PaymentPage />} />
+    <Route path="ticket/:id" element={<TicketPage />} />
+  </Route>,
 ];

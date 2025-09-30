@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { InputField, Button, Card } from '../components/ui';
+import { useAuth } from '../../contexts/AuthContext';
+import { InputField, Button, Card } from '../../components/ui';
 
 const countries = [
   { code: '244', digits: 9, placeholder: '912 345 678', flag: '🇦🇴', label: 'Angola (+244)' },

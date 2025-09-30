@@ -2,13 +2,16 @@ import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
-export default function Sidebar() {
+type SidebarProps = {
+  isCollapsed: boolean;
+  setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
   const { user, logout } = useAuth();
   const navigateTo = useNavigate();
   const location = useLocation();
-
   const [isOpen, setIsOpen] = useState(false); // mobile drawer
-  const [isCollapsed, setIsCollapsed] = useState(false); // desktop collapse
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -17,71 +20,76 @@ export default function Sidebar() {
     navigateTo("/");
   };
 
-  // 👉 prefixo dinâmico: se for admin = "/admin", se for user = "/me"
   const prefix = user?.role === "ADMIN" ? "/admin" : user ? "/me" : "";
 
   return (
     <>
-      {/* Botão de abrir sidebar no mobile */}
+      {/* 👉 ALTERADO: Botão de abrir no mobile (agora na direita) */}
       <button
         onClick={() => setIsOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-50 bg-black/80 text-white px-3 py-2 rounded-md"
+        className="lg:hidden fixed top-4 right-4 z-50 bg-primary text-black px-3 py-2 rounded-md shadow-md"
+        aria-label="Abrir menu"
       >
         ☰
       </button>
 
-      {/* Overlay para fechar no mobile */}
+      {/* Overlay no mobile */}
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-        ></div>
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+        />
       )}
 
-      {/* Sidebar */}
+      {/* 👉 ALTERADO: Sidebar agora fica à direita */}
       <aside
-        className={`fixed top-0 left-0 h-screen bg-black/90 backdrop-blur-lg border-r border-white/10 z-50 transform transition-all duration-300 ease-in-out
-          ${isOpen ? "translate-x-0" : "-translate-x-full"} 
-          lg:translate-x-0 
+        className={`fixed top-0 right-0 h-screen w-screen bg-black/90 backdrop-blur-lg border-l border-white/10 z-50 flex flex-col
+          transform transition-transform duration-300 ease-in-out
+          ${isOpen ? "translate-x-0" : "translate-x-full"} 
+          lg:translate-x-0
           ${isCollapsed ? "w-20" : "w-64"}
         `}
       >
         {/* Cabeçalho */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-white/10">
-          <Link
-            to="/"
-            onClick={() => setIsOpen(false)}
-            className={`font-bold text-primary text-lg hover:text-primary-light transition-all ${
-              isCollapsed ? "hidden" : "block"
-            }`}
-          >
-            IngressosDaBanda
-          </Link>
+          {!isCollapsed && (
+            <Link
+              to="/"
+              onClick={() => setIsOpen(false)}
+              className="font-bold text-primary text-lg hover:text-primary-light transition-all"
+            >
+              IngressosDaBanda
+            </Link>
+          )}
 
-          {/* Botão de fechar no mobile */}
+          {/* 👉 ALTERADO: Fechar mobile (fica na esquerda agora, porque a sidebar está à direita) */}
           <button
             onClick={() => setIsOpen(false)}
             className="text-gray-300 hover:text-white lg:hidden"
+            aria-label="Fechar menu"
           >
             ✕
           </button>
 
-          {/* Botão colapsar no desktop */}
+          {/* Colapsar desktop */}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="hidden lg:block text-gray-400 hover:text-white"
+            aria-label={isCollapsed ? "Expandir sidebar" : "Colapsar sidebar"}
           >
-            {isCollapsed ? "⇥" : "⇤"}
+            {isCollapsed ? "⇤" : "⇥"}
           </button>
         </div>
 
         {/* Links principais */}
-        <nav className="flex-1 px-2 py-4 space-y-2">
+        <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
           <Link
             to="/"
             onClick={() => setIsOpen(false)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-md ${
-              isActive("/") ? "bg-primary/20 text-primary" : "text-gray-200 hover:bg-white/10"
+            className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors ${
+              isActive("/")
+                ? "bg-primary/20 text-primary"
+                : "text-gray-200 hover:bg-white/10"
             }`}
           >
             <span>🏠</span>
@@ -92,7 +100,7 @@ export default function Sidebar() {
             <Link
               to={`${prefix}/events`}
               onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md ${
+              className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors ${
                 isActive(`${prefix}/events`)
                   ? "bg-primary/20 text-primary"
                   : "text-gray-200 hover:bg-white/10"
@@ -104,39 +112,38 @@ export default function Sidebar() {
           )}
 
           {user && user.role !== "ADMIN" && (
-            <Link
-              to="/me/purchases"
-              onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md ${
-                isActive("/me/purchases")
-                  ? "bg-primary/20 text-primary"
-                  : "text-gray-200 hover:bg-white/10"
-              }`}
-            >
-              <span>🛒</span>
-              {!isCollapsed && "Minhas Compras"}
-            </Link>
-          )}
-
-          {user && user.role !== "ADMIN" && (
-            <Link
-              to="/me/profile"
-              onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md ${
-                isActive("/me/profile")
-                  ? "bg-primary/20 text-primary"
-                  : "text-gray-200 hover:bg-white/10"
-              }`}
-            >
-              <span>👤</span>
-              {!isCollapsed && "Perfil"}
-            </Link>
+            <>
+              <Link
+                to="/me/purchases"
+                onClick={() => setIsOpen(false)}
+                className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors ${
+                  isActive("/me/purchases")
+                    ? "bg-primary/20 text-primary"
+                    : "text-gray-200 hover:bg-white/10"
+                }`}
+              >
+                <span>🛒</span>
+                {!isCollapsed && "Minhas Compras"}
+              </Link>
+              <Link
+                to="/profile"
+                onClick={() => setIsOpen(false)}
+                className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors ${
+                  isActive("/me/profile")
+                    ? "bg-primary/20 text-primary"
+                    : "text-gray-200 hover:bg-white/10"
+                }`}
+              >
+                <span>👤</span>
+                {!isCollapsed && "Perfil"}
+              </Link>
+            </>
           )}
         </nav>
 
         {/* Admin Section */}
         {user?.role === "ADMIN" && (
-          <div className="px-2 py-4 border-t border-white/10">
+          <div className="px-2 py-4 border-t border-white/10 space-y-2">
             {!isCollapsed && (
               <div className="px-4 py-1 text-xs text-gray-400 uppercase tracking-wider border-l-2 border-primary mb-2">
                 Admin
@@ -145,7 +152,7 @@ export default function Sidebar() {
             <Link
               to="/admin/events"
               onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-2 pl-4 py-2 rounded-md ${
+              className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors ${
                 isActive("/admin/events")
                   ? "bg-primary/20 text-primary"
                   : "text-gray-200 hover:bg-white/10"
@@ -157,7 +164,7 @@ export default function Sidebar() {
             <Link
               to="/admin/users"
               onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-2 pl-4 py-2 rounded-md ${
+              className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors ${
                 isActive("/admin/users")
                   ? "bg-primary/20 text-primary"
                   : "text-gray-200 hover:bg-white/10"
@@ -169,7 +176,7 @@ export default function Sidebar() {
             <Link
               to="/admin/users-purchases"
               onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-2 pl-4 py-2 rounded-md ${
+              className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors ${
                 isActive("/admin/users-purchases")
                   ? "bg-primary/20 text-primary"
                   : "text-gray-200 hover:bg-white/10"
@@ -186,7 +193,7 @@ export default function Sidebar() {
           <div className="px-2 py-4 border-t border-white/10">
             <button
               onClick={doLogout}
-              className="w-full flex items-center gap-2 px-4 py-2 text-red-400 hover:bg-red-500/10 rounded-md"
+              className="w-full flex items-center gap-3 px-4 py-2 text-red-400 hover:bg-red-500/10 rounded-md transition-colors"
             >
               <span>🚪</span>
               {!isCollapsed && "Sair"}

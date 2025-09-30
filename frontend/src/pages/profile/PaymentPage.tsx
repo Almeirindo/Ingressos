@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { Event } from '../types/events';
-import Card from '../components/ui/Card';
-import Button from '../components/ui/Button';
+import { Event } from '../../types/events';
+import Card from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
 
 type Purchase = {
   id: number;

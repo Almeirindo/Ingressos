@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Event } from '../types/events';
-import NavBar from '../components/NavBar';
-import Footer from '../components/Footer';
+import { Event } from '../../types/events';
+import NavBar from '../../components/NavBar';
+import Footer from '../../components/Footer';
 
 export default function EventsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -111,7 +111,7 @@ export default function EventsPage() {
 
   return (
     <>
-      <NavBar />
+      {/* <NavBar /> */}
       <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="max-w-7xl mx-auto mb-8">
@@ -338,7 +338,7 @@ export default function EventsPage() {
           )}
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }

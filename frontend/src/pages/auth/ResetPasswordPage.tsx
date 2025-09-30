@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { InputField, Button, Card } from '../components/ui';
+import { InputField, Button, Card } from '../../components/ui';
 
 export default function ResetPasswordPage() {
   const [token, setToken] = useState('');

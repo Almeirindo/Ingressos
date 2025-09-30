@@ -24,6 +24,7 @@ yarn-error.log*
 Thumbs.db
 
 sql
+lixo
 
 # editor
 .vscode/

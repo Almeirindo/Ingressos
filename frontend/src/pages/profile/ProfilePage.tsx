@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import Card from '../components/ui/Card';
-import InputField from '../components/ui/InputField';
-import LoadingSpinner from '../components/ui/LoadingSpinner';
+import { useAuth } from '../../contexts/AuthContext';
+import Card from '../../components/ui/Card';
+import InputField from '../../components/ui/InputField';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
 
 type UserProfile = {
   id: number;

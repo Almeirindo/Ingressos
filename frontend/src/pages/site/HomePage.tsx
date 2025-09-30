@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import EventGrid from '../components/EventGrid';
-import EventCarousel from '../components/EventCarousel';
-import { InputField, Button } from '../components/ui';
-import { Event } from '../types/events';
-import { Purchase } from '../types/purchases';
-import NavBar from '../components/NavBar';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import EventGrid from '../../components/EventGrid';
+import EventCarousel from '../../components/EventCarousel';
+import { InputField, Button } from '../../components/ui';
+import { Event } from '../../types/events';
+import { Purchase } from '../../types/purchases';
+import NavBar from '../../components/NavBar';
 
 
 export default function HomePage() {
@@ -16,8 +16,22 @@ export default function HomePage() {
   const [endDate, setEndDate] = useState('');
   const [isSearching, setIsSearching] = useState(false);
 
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [purchases, setPurchases] = useState<Purchase[]>([]);
+  const navigate = useNavigate();
+
+
+  // redireciona se já estiver logado
+  useEffect(() => {
+    if (!user) return;
+
+    if (user.role === "ADMIN") {
+      navigate("/admin/dashboard"); // ou "/admin/dashboard"
+    } else if (user.role === "USER") {
+      navigate("/dashboard"); // ou "/me/events"
+    }
+  }, [user, navigate]);
+
 
   useEffect(() => {
     fetch('/api/events')
@@ -36,7 +50,7 @@ export default function HomePage() {
       .catch(() => setPurchases([]));
   }, [token]);
 
-  
+
   const heroImage = useMemo(() => {
     const firstWithFlyer = events.find(e => !!e.flyerPath);
     return firstWithFlyer?.flyerPath || undefined;

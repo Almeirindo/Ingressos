@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { InputField, Button, Card } from '../components/ui';
+import { useAuth } from '../../contexts/AuthContext';
+import { InputField, Button, Card } from '../../components/ui';
 
 export default function LoginPage() {
   const { login } = useAuth();

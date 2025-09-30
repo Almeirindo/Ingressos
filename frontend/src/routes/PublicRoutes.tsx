@@ -1,12 +1,12 @@
 // routes/publicRoutes.tsx
 import { Route } from "react-router-dom";
-import HomePage from "../pages/HomePage";
-import EventsPage from "../pages/EventsPage";
-import EventDetailPage from "../pages/EventDetailPage";
-import HowItWorksPage from "../pages/HowItWorksPage";
-import ContactPage from "../pages/ContactPage";
-import FAQPage from "../pages/FAQPage";
-import TermsPage from "../pages/TermsPage";
+import HomePage from "../pages/site/HomePage";
+import EventsPage from "../pages/site/EventsPage";
+import EventDetailPage from "../pages/site/EventDetailPage";
+import HowItWorksPage from "../pages/site/HowItWorksPage";
+import ContactPage from "../pages/site/ContactPage";
+import FAQPage from "../pages/site/FAQPage";
+import TermsPage from "../pages/site/TermsPage";
 
 export const publicRoutes = [
   <Route path="/" element={<HomePage />} key="/" />,

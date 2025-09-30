@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { InputField, Button, Card } from '../components/ui';
+import { InputField, Button, Card } from '../../components/ui';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');

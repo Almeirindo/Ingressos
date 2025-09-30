@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 
-import { getImageUrl } from "../utils/getImageUrl";
+import { getImageUrl } from "../../utils/getImageUrl";
 
 
 type Purchase = {
