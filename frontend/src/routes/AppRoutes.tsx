@@ -4,7 +4,6 @@ import { publicRoutes } from "../routes/PublicRoutes";
 import { authRoutes } from "../routes/AuthRoutes";
 import { privateRoutes } from "../routes/PrivateRoutes";
 import { adminRoutes } from "../routes/AdminRoutes";
-// import { adminRoutes } from "../routes/adminRoutes";
 
 import NotFoundPage from "../pages/NotFoundPage";
 
@@ -16,6 +15,7 @@ export default function AppRoutes() {
       {authRoutes}
       {privateRoutes}
       {adminRoutes}
+      
       {/* Rota global NotFound */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

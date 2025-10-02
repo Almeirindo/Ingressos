@@ -24,7 +24,9 @@ export default function EventDetailPage() {
       nav('/login');
       return;
     }
+    
     setError(null);
+    
     try {
       const res = await fetch('/api/purchases', {
         method: 'POST',

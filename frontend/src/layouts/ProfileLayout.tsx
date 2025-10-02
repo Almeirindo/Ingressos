@@ -12,7 +12,7 @@ export default function ProfileLayout() {
 
       <main
         className={`
-          flex-1 text-white pt-10 transition-all duration-300
+          flex-1 text-white transition-all duration-300
           ml-0 
           lg:${isCollapsed ? "ml-20" : "ml-64"}
         `}

@@ -22,6 +22,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const raw = localStorage.getItem('token');
     return raw && raw !== 'undefined' ? raw : null;
   });
+  
   const [user, setUser] = useState<User | null>(() => {
     const raw = localStorage.getItem('user');
     if (!raw) return null;
@@ -61,8 +62,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-  return ctx;
+  const context = useContext(AuthContext);
+  if (!context) throw new Error('useAuth must be used within AuthProvider');
+  return context;
 }
 

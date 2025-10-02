@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+
 import { useAuth } from '../../contexts/AuthContext';
+
 import EventGrid from '../../components/EventGrid';
 import EventCarousel from '../../components/EventCarousel';
 import { InputField, Button } from '../../components/ui';
@@ -17,6 +19,8 @@ export default function HomePage() {
   const [isSearching, setIsSearching] = useState(false);
 
   const { token, user } = useAuth();
+
+  
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const navigate = useNavigate();
 
@@ -186,8 +190,9 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        
       </div>
-      {/* <NavBar /> */}
     </>
 
   );

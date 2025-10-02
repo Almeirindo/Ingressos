@@ -1,5 +1,6 @@
 // routes/publicRoutes.tsx
 import { Route } from "react-router-dom";
+
 import HomePage from "../pages/site/HomePage";
 import EventsPage from "../pages/site/EventsPage";
 import EventDetailPage from "../pages/site/EventDetailPage";

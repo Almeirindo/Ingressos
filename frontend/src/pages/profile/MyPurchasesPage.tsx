@@ -34,28 +34,6 @@ export default function MyPurchasesPage() {
       .catch(() => setPurchases([]));
   }, [token]);
 
-  // const loadPurchages = async () => {
-  //   try {
-  //     const res = await fetch('/api/purchases/my-purchases', {
-  //       headers: { 'Authorization': `Bearer ${token}` }
-  //     })
-  //     const data = await res.json()
-  //     console.log(data)
-
-  //   } catch (error) {
-  //     console.error(error);
-  //     setPurchases([])
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if (!token) return;
-  //   loadPurchages()
-  // }, [token])
-
-
-
-
   return (
     <div className="p-6">
       <h2 className="text-2xl font-semibold mb-4">Minhas Compras</h2>
@@ -67,7 +45,7 @@ export default function MyPurchasesPage() {
               <img
                 src={getImageUrl(p.event.flyerPath)}
                 alt={p.event.title}
-                className="h-1/2 w-full rounded object-cover"
+                className="h-[40%] w-full rounded object-cover"
               />
             ) : (
               <span className="text-gray-400 text-xs">Sem flyer</span>
@@ -132,7 +110,7 @@ export default function MyPurchasesPage() {
 
               {/* Instruções para pendente */}
               {p.status === 'PENDING' && (
-                <div className="border-t border-white/10 pt-4">
+                <div className="border-t border-white/10 pt-4 mb-10">
                   <div className="bg-yellow-600/20 rounded-lg p-3">
                     <div className="text-sm text-yellow-200">
                       <div className="font-semibold mb-1">Aguardando validação</div>
