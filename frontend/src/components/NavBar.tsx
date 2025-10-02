@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 
 export default function NavBar() {
-  const { user, logout } = useAuth();
 
   const navigateTo = useNavigate();
 
@@ -29,11 +27,6 @@ export default function NavBar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isMenuOpen, isSearchOpen]);
 
-  const doLogout = () => {
-    logout();
-    navigateTo('/');
-    setIsMenuOpen(false);
-  }
 
   const toggleMenu = () => {
     // On desktop, close search if open
@@ -79,10 +72,10 @@ export default function NavBar() {
 
   return (
     <header role="navigation" className="w-full border-b border-white/10 bg-black/40 backdrop-blur-lg sticky top-0 z-50 shadow-lg">
-      
+
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          
+
           {/* Logo */}
           <div className="flex items-center">
             <Link
@@ -102,8 +95,8 @@ export default function NavBar() {
               <Link
                 to="/"
                 className={`relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${isActive('/')
-                    ? 'text-primary bg-primary/10 border border-primary/30'
-                    : 'text-gray-200 hover:text-white hover:bg-white/5'
+                  ? 'text-primary bg-primary/10 border border-primary/30'
+                  : 'text-gray-200 hover:text-white hover:bg-white/5'
                   }`}
                 onClick={closeMenu}
                 aria-current={isActive('/') ? 'page' : undefined}
@@ -122,8 +115,8 @@ export default function NavBar() {
                 to="/events"
                 title=""
                 className={`relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${isActive('/events')
-                    ? 'text-primary bg-primary/10 border border-primary/30'
-                    : 'text-gray-200 hover:text-white hover:bg-white/5'
+                  ? 'text-primary bg-primary/10 border border-primary/30'
+                  : 'text-gray-200 hover:text-white hover:bg-white/5'
                   }`}
                 onClick={closeMenu}
                 aria-current={isActive('/events') ? 'page' : undefined}
@@ -136,25 +129,8 @@ export default function NavBar() {
                   <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full"></div>
                 )}
               </Link>
-              {user && (
-                <Link
-                  to="/me/purchases"
-                  className={`relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${isActive('/me/purchases')
-                      ? 'text-primary bg-primary/10 border border-primary/30'
-                      : 'text-gray-200 hover:text-white hover:bg-white/5'
-                    }`}
-                  onClick={closeMenu}
-                  aria-current={isActive('/me/purchases') ? 'page' : undefined}
-                >
-                  <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 1.5M7 13l-1.5-1.5m0 0L3 3m2 2h10l4-8" />
-                  </svg>
-                  Minhas Compras
-                  {isActive('/me/purchases') && (
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full"></div>
-                  )}
-                </Link>
-              )}
+
+
             </div>
           </div>
 
@@ -205,85 +181,24 @@ export default function NavBar() {
               )}
             </div>
 
-            {/* User Menu or Login/Register */}
-            {user ? (
-              <div className="relative">
-                <button
-                  onClick={toggleMenu}
-                  className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all"
-                  aria-label="Menu do usuário"
-                  aria-expanded={isMenuOpen}
-                >
-                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-semibold">
-                    {user.name?.charAt(0)?.toUpperCase() || 'U'}
-                  </div>
-                  <span className="hidden md:inline text-white text-sm">{user.name || 'Usuário'}</span>
-                </button>
+            {/* Login/Register */}
+            <div className="hidden md:flex items-center gap-2">
+              <Link
+                to="/login"
+                className="px-4 py-2 text-gray-200 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-300"
+                onClick={closeMenu}
+              >
+                Entrar
+              </Link>
+              <Link
+                to="/register"
+                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-light transition-all duration-300 font-medium"
+                onClick={closeMenu}
+              >
+                Registrar
+              </Link>
+            </div>
 
-                {/* User Dropdown - Only on Desktop */}
-                {isMenuOpen && (
-                  <div className="hidden md:block absolute right-0 mt-2 w-48 bg-black/95 backdrop-blur-lg rounded-lg shadow-xl border border-white/10 py-1 z-50">
-                    <Link
-                      to="/profile"
-                      className="block px-4 py-2 text-gray-200 hover:bg-white/5 rounded transition-colors"
-                      onClick={closeMenu}
-                    >
-                      Perfil
-                    </Link>
-                    {user.role === 'ADMIN' && (
-                      <>
-                        <div className="px-4 py-1 text-xs text-gray-400 uppercase tracking-wider border-l-2 border-primary ml-4">Admin</div>
-                        <Link
-                          to="/admin/events"
-                          className="block pl-8 py-2 text-gray-200 hover:bg-white/5 rounded transition-colors"
-                          onClick={closeMenu}
-                        >
-                          Gerenciar Eventos
-                        </Link>
-                        <Link
-                          to="/admin/users"
-                          className="block pl-8 py-2 text-gray-200 hover:bg-white/5 rounded transition-colors"
-                          onClick={closeMenu}
-                        >
-                          Gerenciar Usuários
-                        </Link>
-                        <Link
-                          to="/admin/users-purchases"
-                          className="block pl-8 py-2 text-gray-200 hover:bg-white/5 rounded transition-colors"
-                          onClick={closeMenu}
-                        >
-                          Gerenciar Compras
-                        </Link>
-                      </>
-                    )}
-                    <div className="border-t border-white/10 my-1"></div>
-                    <button
-                      onClick={doLogout}
-                      className="w-full text-left px-4 py-2 text-red-400 hover:bg-red-500/10 rounded transition-colors"
-                    >
-                      Sair
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="hidden md:flex items-center gap-2">
-                <Link
-                  to="/login"
-                  className="px-4 py-2 text-gray-200 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-300"
-                  onClick={closeMenu}
-                >
-                  Entrar
-                </Link>
-                <Link
-                  to="/register"
-                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-light transition-all duration-300 font-medium"
-                  onClick={closeMenu}
-                >
-                  Registrar
-                </Link>
-              </div>
-            )}
           </div>
 
 
@@ -300,7 +215,7 @@ export default function NavBar() {
               </svg>
             </button>
           </div>
-        
+
         </div>
 
 
@@ -311,8 +226,8 @@ export default function NavBar() {
               <Link
                 to="/"
                 className={`block px-3 py-2 rounded-md text-base font-medium transition-all ${isActive('/')
-                    ? 'text-primary bg-primary/10'
-                    : 'text-gray-200 hover:text-white hover:bg-white/5'
+                  ? 'text-primary bg-primary/10'
+                  : 'text-gray-200 hover:text-white hover:bg-white/5'
                   }`}
                 onClick={closeMenu}
               >
@@ -321,63 +236,15 @@ export default function NavBar() {
               <Link
                 to="/events"
                 className={`block px-3 py-2 rounded-md text-base font-medium transition-all ${isActive('/events')
-                    ? 'text-primary bg-primary/10'
-                    : 'text-gray-200 hover:text-white hover:bg-white/5'
+                  ? 'text-primary bg-primary/10'
+                  : 'text-gray-200 hover:text-white hover:bg-white/5'
                   }`}
                 onClick={closeMenu}
               >
                 Eventos
               </Link>
-              {user && (
-                <>
-                  <Link
-                    to="/me/purchases"
-                    className={`block px-3 py-2 rounded-md text-base font-medium transition-all ${isActive('/me/purchases')
-                        ? 'text-primary bg-primary/10'
-                        : 'text-gray-200 hover:text-white hover:bg-white/5'
-                      }`}
-                    onClick={closeMenu}
-                  >
-                    Minhas Compras
-                  </Link>
-                  <Link
-                    to="/profile"
-                    className={`block px-3 py-2 rounded-md text-base font-medium transition-all ${isActive('/profile')
-                        ? 'text-primary bg-primary/10'
-                        : 'text-gray-200 hover:text-white hover:bg-white/5'
-                      }`}
-                    onClick={closeMenu}
-                  >
-                    Perfil
-                  </Link>
-                </>
-              )}
-              {user && user.role === 'ADMIN' && (
-                <div className="space-y-1 mt-2">
-                  <span className="block px-3 py-1 text-xs text-gray-400 uppercase tracking-wider border-l-2 border-primary ml-4">Admin</span>
-                  <Link
-                    to="/admin/events"
-                    className="block pl-8 py-2 text-gray-200 hover:text-white hover:bg-white/5 rounded-md transition-all"
-                    onClick={closeMenu}
-                  >
-                    Gerenciar Eventos
-                  </Link>
-                  <Link
-                    to="/admin/users"
-                    className="block pl-8 py-2 text-gray-200 hover:text-white hover:bg-white/5 rounded-md transition-all"
-                    onClick={closeMenu}
-                  >
-                    Gerenciar Usuários
-                  </Link>
-                  <Link
-                    to="/admin/users-purchases"
-                    className="block pl-8 py-2 text-gray-200 hover:text-white hover:bg-white/5 rounded-md transition-all"
-                    onClick={closeMenu}
-                  >
-                    Gerenciar Compras
-                  </Link>
-                </div>
-              )}
+
+
               {/* Mobile Search - Toggleable in menu */}
               <div className="px-3 py-2">
                 <button
@@ -417,42 +284,30 @@ export default function NavBar() {
                   </form>
                 )}
               </div>
-              
-              {user ? (
-                <div className="px-3 py-2 space-y-1 border-t border-white/10">
-                  <button
-                    onClick={doLogout}
-                    className="w-full text-left px-3 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-md transition-all"
-                  >
-                    Sair
-                  </button>
-                </div>
-              ) : (
-                <div className="px-3 py-2 space-y-1 border-t border-white/10">
-                  <Link
-                    to="/login"
-                    className="block px-3 py-2 text-gray-200 hover:text-white hover:bg-white/5 rounded-md transition-all"
-                    onClick={closeMenu}
-                  >
-                    Entrar
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="block px-3 py-2 bg-primary text-white rounded-md hover:bg-primary-light transition-all text-center"
-                    onClick={closeMenu}
-                  >
-                    Registrar
-                  </Link>
-                </div>
-              )}
-              
+
+              <div className="px-3 py-2 space-y-1 border-t border-white/10">
+                <Link
+                  to="/login"
+                  className="block px-3 py-2 text-gray-200 hover:text-white hover:bg-white/5 rounded-md transition-all"
+                  onClick={closeMenu}
+                >
+                  Entrar
+                </Link>
+                <Link
+                  to="/register"
+                  className="block px-3 py-2 bg-primary text-white rounded-md hover:bg-primary-light transition-all text-center"
+                  onClick={closeMenu}
+                >
+                  Registrar
+                </Link>
+              </div>
             </div>
           </div>
         )}
 
 
       </div>
-    
+
     </header>
   );
 }

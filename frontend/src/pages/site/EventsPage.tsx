@@ -4,6 +4,9 @@ import { Event } from '../../types/events';
 import NavBar from '../../components/NavBar';
 import Footer from '../../components/Footer';
 
+
+import { FaSearch } from 'react-icons/fa';
+
 export default function EventsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [events, setEvents] = useState<Event[]>([]);
@@ -111,7 +114,7 @@ export default function EventsPage() {
 
   return (
     <>
-      {/* <NavBar /> */}
+      <NavBar />
       <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="max-w-7xl mx-auto mb-8">
@@ -138,9 +141,12 @@ export default function EventsPage() {
                   />
                   <button
                     type="submit"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-primary text-black rounded-lg font-medium hover:bg-primary-light transition-all duration-300"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-light transition-all duration-300"
                   >
-                    {isSearching ? '...' : 'Buscar'}
+                    { isSearching 
+                      ? '...' 
+                      : <FaSearch />
+                    }
                   </button>
                 </div>
                 <div className="flex gap-2">
@@ -338,7 +344,7 @@ export default function EventsPage() {
           )}
         </div>
       </div>
-      {/* <Footer /> */}
+      <Footer />
     </>
   );
 }

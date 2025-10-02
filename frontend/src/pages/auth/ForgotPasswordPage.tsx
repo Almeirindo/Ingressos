@@ -32,7 +32,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 gradient-bg" role="main">
+    <div className="min-h-screen flex items-center justify-center p-4 pt-8 gradient-bg" role="main">
       <div className="w-full max-w-md">
         {/* Header */}
         <header className="text-center mb-8 fade-in">
