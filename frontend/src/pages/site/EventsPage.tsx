@@ -149,11 +149,11 @@ export default function EventsPage() {
                     }
                   </button>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as 'date' | 'price' | 'name')}
-                    className="px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300"
+                    className="w-full md:w-auto px-4 py-3 bg-[#0A0D14] border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300"
                   >
                     <option value="date">Ordenar por Data</option>
                     <option value="price">Ordenar por Preço</option>
@@ -162,7 +162,7 @@ export default function EventsPage() {
                   <select
                     value={filterBy}
                     onChange={(e) => setFilterBy(e.target.value as 'all' | 'available' | 'upcoming')}
-                    className="px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300"
+                    className="w-full md:w-auto px-4 py-3 bg-[#0A0D14] border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300"
                   >
                     <option value="all">Todos</option>
                     <option value="available">Disponíveis</option>
