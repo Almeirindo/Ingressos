@@ -2,6 +2,18 @@ import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
+import { 
+  FaBars, 
+  FaArrowRight, 
+  FaArrowLeft, 
+  FaHouse, 
+  FaCartShopping, 
+  FaTicket, 
+  FaUser 
+} from "react-icons/fa6";
+
+import { LuLogOut } from "react-icons/lu";
+
 type SidebarProps = {
   isCollapsed: boolean;
   setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
@@ -29,7 +41,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
       {/* Botão de abrir sidebar no mobile */}
       <button
         onClick={() => setIsOpen(true)}
-        className={`lg:hidden fixed top-4 right-4 z-50 bg-black/80 text-white px-3 py-2 rounded-md ${isOpen ? "hidden" : "block" }`}
+        className={`lg:hidden fixed top-4 right-4 z-50 bg-black/80 text-white px-3 py-2 rounded-md ${isOpen ? "hidden" : "block"}`}
       >
         ☰
       </button>
@@ -55,9 +67,8 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           <Link
             to="/"
             onClick={() => setIsOpen(false)}
-            className={`font-bold text-primary text-lg hover:text-primary-light transition-all ${
-              isCollapsed ? "hidden" : "block"
-            }`}
+            className={`font-bold text-primary text-lg hover:text-primary-light transition-all ${isCollapsed ? "hidden" : "block"
+              }`}
           >
             IngressosDaBanda
           </Link>
@@ -73,9 +84,13 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           {/* Botão colapsar no desktop */}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="hidden lg:block text-gray-400 hover:text-white"
+            className="hidden lg:block text-gray-400 hover:text-white text-center mx-auto"
           >
-            {isCollapsed ? "⇥" : "⇤"}
+            {/* {isCollapsed
+              ? <FaArrowRight />
+              : <FaArrowLeft />
+            } */}
+            <FaBars />
           </button>
         </div>
 
@@ -84,11 +99,12 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           <Link
             to="/"
             onClick={() => setIsOpen(false)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-md ${
-              isActive("/") ? "bg-primary/20 text-primary" : "text-gray-200 hover:bg-white/10"
-            }`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-md ${isActive("/") ? "bg-primary/20 text-primary" : "text-gray-200 hover:bg-white/10"
+              }`}
           >
-            <span>🏠</span>
+            <span>
+              <FaHouse />
+            </span>
             {!isCollapsed && "Home"}
           </Link>
 
@@ -96,13 +112,14 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             <Link
               to={`${prefix}/events`}
               onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md ${
-                isActive(`${prefix}/events`)
-                  ? "bg-primary/20 text-primary"
-                  : "text-gray-200 hover:bg-white/10"
-              }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md ${isActive(`${prefix}/events`)
+                ? "bg-primary/20 text-primary"
+                : "text-gray-200 hover:bg-white/10"
+                }`}
             >
-              <span>🎟</span>
+              <span>
+                <FaTicket />
+              </span>
               {!isCollapsed && "Eventos"}
             </Link>
           )}
@@ -111,13 +128,14 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             <Link
               to="/me/purchases"
               onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md ${
-                isActive("/me/purchases")
-                  ? "bg-primary/20 text-primary"
-                  : "text-gray-200 hover:bg-white/10"
-              }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md ${isActive("/me/purchases")
+                ? "bg-primary/20 text-primary"
+                : "text-gray-200 hover:bg-white/10"
+                }`}
             >
-              <span>🛒</span>
+              <span>
+                <FaCartShopping />
+              </span>
               {!isCollapsed && "Minhas Compras"}
             </Link>
           )}
@@ -126,13 +144,14 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             <Link
               to="/profile"
               onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md ${
-                isActive("/me/profile")
-                  ? "bg-primary/20 text-primary"
-                  : "text-gray-200 hover:bg-white/10"
-              }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md ${isActive("/me/profile")
+                ? "bg-primary/20 text-primary"
+                : "text-gray-200 hover:bg-white/10"
+                }`}
             >
-              <span>👤</span>
+              <span>
+                <FaUser />
+              </span>
               {!isCollapsed && "Perfil"}
             </Link>
           )}
@@ -149,11 +168,10 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             <Link
               to="/admin/events"
               onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-2 pl-4 py-2 rounded-md ${
-                isActive("/admin/events")
-                  ? "bg-primary/20 text-primary"
-                  : "text-gray-200 hover:bg-white/10"
-              }`}
+              className={`flex items-center gap-2 pl-4 py-2 rounded-md ${isActive("/admin/events")
+                ? "bg-primary/20 text-primary"
+                : "text-gray-200 hover:bg-white/10"
+                }`}
             >
               <span>📅</span>
               {!isCollapsed && "Gerenciar Eventos"}
@@ -161,11 +179,10 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             <Link
               to="/admin/users"
               onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-2 pl-4 py-2 rounded-md ${
-                isActive("/admin/users")
-                  ? "bg-primary/20 text-primary"
-                  : "text-gray-200 hover:bg-white/10"
-              }`}
+              className={`flex items-center gap-2 pl-4 py-2 rounded-md ${isActive("/admin/users")
+                ? "bg-primary/20 text-primary"
+                : "text-gray-200 hover:bg-white/10"
+                }`}
             >
               <span>👥</span>
               {!isCollapsed && "Gerenciar Usuários"}
@@ -173,11 +190,10 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             <Link
               to="/admin/users-purchases"
               onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-2 pl-4 py-2 rounded-md ${
-                isActive("/admin/users-purchases")
-                  ? "bg-primary/20 text-primary"
-                  : "text-gray-200 hover:bg-white/10"
-              }`}
+              className={`flex items-center gap-2 pl-4 py-2 rounded-md ${isActive("/admin/users-purchases")
+                ? "bg-primary/20 text-primary"
+                : "text-gray-200 hover:bg-white/10"
+                }`}
             >
               <span>💳</span>
               {!isCollapsed && "Gerenciar Compras"}
@@ -192,7 +208,9 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
               onClick={doLogout}
               className="w-full flex items-center gap-2 px-4 py-2 text-red-400 hover:bg-red-500/10 rounded-md"
             >
-              <span>🚪</span>
+              <span>
+                <LuLogOut />
+              </span>
               {!isCollapsed && "Sair"}
             </button>
           </div>
